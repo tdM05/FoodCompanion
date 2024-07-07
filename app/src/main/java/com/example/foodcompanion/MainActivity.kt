@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,35 +22,59 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.TextField
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            SimpleFilledTextFieldSample()
+            LoginPage()
         }
     }
 }
 
 @Composable
-fun SimpleFilledTextFieldSample() {
-    var text by remember { mutableStateOf("Hello") }
+fun LoginPage(modifier: Modifier = Modifier) {
     Column (
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "asdfasdfasd", modifier = Modifier)
-        TextField(
-            value = text,
-            onValueChange = { text = it },
-            label = { Text("Label") },
-        )
+        // This is the title
+        Text(text = "Food Companion", fontSize = 60.sp, lineHeight = 60.sp, textAlign = TextAlign.Center)
+        //These are input fields
+        TextInputField("Institution ID", modifier = Modifier.padding(16.dp))
+        TextInputField("Patient ID", modifier = Modifier.padding(16.dp))
+        //This is the button
     }
+}
+
+@Composable
+fun TextInputField(label: String, initialString: String = "", modifier: Modifier = Modifier) {
+    var text by remember { mutableStateOf(initialString) }
+    TextField(
+        value = text,
+        onValueChange = { text = it },
+        label = { Text(label) },
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun PatientID(modifier: Modifier = Modifier) {
+    var text by remember { mutableStateOf("") }
+    TextField(
+        value = text,
+        onValueChange = { text = it },
+        label = { Text("Label") },
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun TextFieldPreview() {
-    SimpleFilledTextFieldSample()
+    LoginPage()
 }
