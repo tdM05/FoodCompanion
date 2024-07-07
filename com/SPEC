@@ -1,0 +1,85 @@
+Specifications for Client/Server communications for the FoodCompanion app.
+
+* Communications must be fostered over TCP connections.
+* All dates must be in the format YYYYMMDD
+* All times must be in the format HHMMSS (in 24 hour time)
+
+** GETTING MEAL OPTIONS **
+
+1. The CLIENT must log in with the SERVER
+
+    A. The transmitted message must begin with 'NW_CON' to signify the establishment of a new connection.
+    B. Appended to the message must be a 14-character string indicating the client version.
+
+2. If the app version is compatible, the SERVER will reply to the CLIENT as follows:
+
+    |    "NW_CON"    |    Session Token (32)    |    RSA Public Key    |
+
+    A. The received reply will begin with 'NW_CON' just as the transmitted message.
+    B. After the aforementioned is a 32-character bytearray with the session token for the CLIENT.
+    C. After the session token is an RSA Public Key that is to be used for the next transmission.
+        * The 'n' and 'e' values of the RSA key are separated by a non-numeric delimiter (the character '!')
+
+For the next communications, a HEADER must be used (see HEADER FORMAT at the end of the document).
+
+3. The CLIENT must send the following patient information to the SERVER as per the ensuing format:
+
+    Patient information needed:
+    A. Institution ID (to identify the facility at which the patient is/was treat/ed.
+    B. Date of Birth
+    C. A UID (numeric or phonetic for ease of use)
+
+    Format:
+    A. The first section of the message must be a header compliant with the HEADER FORMAT.
+    B. Next, a 64-character, hexadecimal hash (SHA3, 256-bit) must be included.
+        * This hash is that of the ENCRYPTED message.
+    C. Finally, the message. Since this transmission contains sensitive patient information, it must be
+       encrypted with the RSA public key received earlier.
+
+4. The SERVER will send back the meal options as a JSON bytearray per the following format:
+    A. The first section of the message will be a header compliant with the HEADER FORMAT.
+    B. Next, a 64-character, hexadecimal hash (SHA3, 256-bit) will be included.
+    C. Finally, the message, containing a PLAINTEXT JSON string will be appended.
+        * This data may contain string, integers, floating point numbers, booleans, and lists (of integers or strings).
+
+** HEADER FORMAT **
+
+There may be 3 kinds of data being transmitted in the header:
+    1. Strings/Bytearrays
+    2. Integers
+    3. Booleans (as 1 or 0)
+
+    * Note, each of the above must be encoded to a bytearray (UTF-8).
+
+There are 5 items in the header (they must be in the following order):
+
+    H_TX_TIME
+        Description: The time at which the data was transmitted.
+                     The time must be formatted as YYYYMMDDhhmmss (in 24-hour time).
+        Data Type:   Integer
+        Length:      14 characters
+        Padding:     This should never have to be padded; IF THE DATA IS NOT A 14 DIGIT INTEGER, THROW AN ERROR.
+
+    H_MC_TYPE
+        Description: Type of machine SENDING the message (1 = SERVER, 0 = CLIENT)
+        Data Type:   Boolean
+        Length:      1 character (0 or 1)
+        Padding:     This should never have to be padded; IF THE DATA IS NOT EITHER 1 OR 0, THROW AN ERROR.
+
+    H_SES_TOK
+        Description: Session token for the CLIENT
+        Data Type:   String/Bytearray
+        Length:      32 characters
+        Padding:     This should never have to be padded; IF THE DATA IS NOT A 32 CHARACTER STRING, THROW AN ERROR.
+
+    H_APP_VIS
+        Description: App version (CLIENT)
+        Data Type:   Integer (as YYYYMMDDhhmmss)
+        Length:      14 characters
+        Padding:     This should never have to be padded; IF THE DATA IS NOT A 32 CHARACTER STRING, THROW AN ERROR.
+
+    H_MSG_LEN
+        Description: Message length
+        Data Type:   Integer
+        Length:      6 characters
+        Padding:     PREPEND with '0'.

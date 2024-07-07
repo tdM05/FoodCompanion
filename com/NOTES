@@ -1,0 +1,37 @@
+For the purposes of this application, the IP at which the server is hosted can change between runs.
+
+We acknowledge that in a production environment, a dedicated static IP would be assigned for server/client communications,
+however, due to the constraints of sharing over an open-source platform (GitHub), this is not a guaranteed setup for
+all host machines.
+
+If you've setup a static IP, you may modify the following line of code per the comment:
+
+    |----------------------------------------------------------------
+    | com/data.py
+    |----------------------------------------------------------------
+    |
+    | ...
+    | class TCP:
+    |       IP = socket.gethostbyname(socket.gethostname())
+    |
+    |       # Have a static IP ready for this server?
+    |       # Host your server at that IP by modifying the above line as follows:
+    |       # IP = '192.0.0.1'
+    |       # Of course, change the IP to your static IP.
+    |
+    | ...
+    |-----------------------------------------------------------------
+
+To stop prompting client.py for the server IP, change the value in the following line from True to False
+
+    |----------------------------------------------------------------
+    | com/data.py
+    |----------------------------------------------------------------
+    |
+    | ...
+    |
+    |  # Should the client script prompt for an IP?
+    |  _SRVC_CLT_POL_IP = True
+    |
+    | ...
+    |-----------------------------------------------------------------
