@@ -6,9 +6,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.foodcompanion.Main
-
-
 
 
 object UserInformation {
@@ -25,16 +22,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             Main()
         }
-        val serverIntent = Intent(this, ServerService::class.java)
-        startService(serverIntent)
+        Thread(Client()).start()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // Stop the server service
-        val serverIntent = Intent(this, ServerService::class.java)
-        stopService(serverIntent)
-    }
 }
 
 
