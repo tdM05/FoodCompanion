@@ -16,7 +16,7 @@ The FoodCompanion app was contributed to by (GitHub usernames sorted alphabetica
 
 """
 
-import click, select, sys, hashlib, rsa, socket, re, random, json
+import select, sys, hashlib, rsa, socket, re, random, json
 from datetime import datetime
 from threading import Thread, Event, Timer
 from typing import cast, Type, Any, Dict, Tuple
@@ -65,13 +65,6 @@ class Server:
     __sessions: Dict[str, Tuple[rsa.PublicKey, rsa.PrivateKey]] = {}
     __cost_timer = 15
 
-    def request_exit(self) -> None:
-
-        Server.__is_alive = False
-
-        self.__curr_task.cancel()
-        self._shutdown()
-
     @staticmethod
     def is_compatible(vi: int) -> bool:
         return True
@@ -93,9 +86,18 @@ class Server:
 
         self._net_check()
 
-    def bind(self) -> None:
-        print(f'binding to {self.__net}')
+    def request_exit(self) -> None:
+        global _SERVER_THREAD
 
+        sys.stdout.write("Submitting an exit request now...\n")
+
+        Server.__is_alive = False
+        _SERVER_THREAD.done()
+        self.__curr_task.cancel()
+
+        self._shutdown()
+
+    def bind(self) -> None:
         self.__socket.bind(self.__net)
         self.__socket.listen(sc_data.SRVC_TCP_N_CONN)
 
@@ -141,17 +143,17 @@ class Server:
         self.__curr_task.start()
 
     def _main_loop(self) -> None:
+        global _SERVER_THREAD
+
         self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
         self.__curr_task.start()
 
-        self.__socket.setblocking(False)
-
-        while Server.__is_alive:
+        while Server.__is_alive & (~_SERVER_THREAD.is_done):
             try:
                 R, *_ = select.select(
                     [self.__socket, *[c[0] for c in self.__connections.values() if not c[0]._closed]],
                     [],
-                    [c[0] for c in self.__connections.values()],
+                    [],
                     sc_data.SRVC_SL_TIMEOUT
                 )
 
@@ -160,8 +162,12 @@ class Server:
                 continue  # Go back to the top of the loop and try again.
 
             for r in R:
-                if r is self.__socket:
-                    _conn, _addr = self.__socket.accept()
+                if _SERVER_THREAD.is_done:
+                    break
+
+                if r == self.__socket:
+                    _conn, _addr = cast(socket.socket, r).accept()
+
                     _conn.setblocking(False)
 
                     _c_name = '%s%d-%d' % (*cast(Tuple[str, int], _addr), random.randint(100, 999))
@@ -174,14 +180,13 @@ class Server:
         else:
             sys.stdout.write('Server exiting main loop.\n')
 
-        self.__curr_task.cancel()
         self._shutdown()
 
     def _handle_client(self, __c_name: str) -> None:
         sys.stdout.write(f'[{__c_name}] Replying.\n')
 
         _conn, *_ = self.__connections[__c_name]
-        _rcv = _conn.recv(sc_data.SRVC_TCP_RECV_N)
+        _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
 
         if not _rcv:
             sys.stderr.write(f'[{__c_name}] Connection closed.\n')
@@ -192,10 +197,10 @@ class Server:
         if sc_data.NEW_CONN_CODE in _rcv:
             try:
                 self._new_client(_rcv, __c_name)
-                _conn.close()
 
             except AssertionError as _AE:
                 sys.stderr.write(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE)}\n')
+                _conn.close()
                 self._remove(__c_name)
 
                 return
@@ -257,7 +262,6 @@ class Server:
             __rcv += _rest_of_hdr
 
         # Decode the header
-        print(_std_hdr_len, __rcv[:_std_hdr_len])
         _hdr = sc_data.HeaderUtils.load_header(__rcv[:_std_hdr_len], sc_data.HEADER_PAD_BYTE)
 
         _complete_message_len = _std_hdr_len + sc_data.SHA3_256_HASH_SIZE + _hdr.H_MSG_LEN
@@ -310,12 +314,12 @@ class Server:
 
         self.__shutdown = True
 
+        self.__socket.close()
+
         try:
             self.__curr_task.cancel()
         except Exception:
             pass
-
-        self.__socket.close()
 
         for (s, *_) in self.__connections.values():
             try:
@@ -347,61 +351,42 @@ class Server:
 __server: Server
 
 
-@click.group()
-def cli() -> None:
-    pass
-
-
 def sc_quit() -> None:
-    sys.stdout.write("Submitting an exit request now...\n")
-
     __server.request_exit()
+
+    while _SERVER_THREAD.is_alive():
+        pass # Waiting
+
     sys.exit(0)
 
 
-def exception_hook(exc_type: Type[BaseException], value: Any, traceback: Any) -> None:
-    print(exc_type)
+def _excepthook(exc_type: Type[BaseException], value: Any, traceback: Any) -> None:
+    global __server
 
-    if exc_type is KeyboardInterrupt:
+    if exc_type in (KeyboardInterrupt, ):
         sys.stderr.write('KB_INT\n')
-        sc_quit()
 
     else:
         __server.request_exit()
         sys.__excepthook__(exc_type, value, traceback)
-        sc_quit()
+
+    sc_quit()
 
 
-
-@cli.command()
-@click.option(
-    '-ip', '--ip',
-    type=str,
-    default=sc_data.TCP.IP,
-    help="IPV4 address to host server at.",
-    show_default=True
-)
-@click.option(
-    '-p', '--port',
-    type=int,
-    default=sc_data.TCP.PORT,
-    help="PORT to host the server at.",
-    show_default=True
-)
-def start(*args, **kwargs) -> None:
+def _start() -> None:
     global _SERVER_THREAD, __server
 
     sys.stdout.writelines([
         "-----------------------------------------------\r\n",
         "                                               \r\n",
         "       MediHacks 2024 | FoodCompanion App      \r\n",
-        f" Hosting server at {kwargs['ip']} (PORT {kwargs['port']}) \r\n",
+        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.IP}) \r\n",
         "                                               \r\n",
         "-----------------------------------------------\r\n"
     ])
 
     # Start the server on a new thread
-    __server = Server(kwargs['ip'], kwargs['port'])
+    __server = Server(sc_data.TCP.IP, sc_data.TCP.PORT)
     _SERVER_THREAD = _S_THREAD(target=__server.bind)
     _SERVER_THREAD.start()
 
@@ -414,13 +399,12 @@ def start(*args, **kwargs) -> None:
                 sc_quit()
 
             case _:
-                print(f'Invalid command "{comm}".')
+                sys.stderr.write(f'Invalid command "{comm}".\n')
 
 
 if __name__ == "__main__":
-    sys.excepthook = exception_hook
-
-    cli()
+    sys.excepthook = _excepthook
+    _start()
 
     # Unreachable code
-    sys.exit()
+    sys.exit(-1)
