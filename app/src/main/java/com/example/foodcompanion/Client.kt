@@ -10,7 +10,7 @@ import java.util.Random
 class Client : Runnable {
 
     override fun run() {
-        val client = Socket("10.0.2.2", 1234)
+        val client = Socket("10.0.2.2", 12345)
         client.outputStream.write("Hello from the client!".toByteArray())
         client.close()
     }
