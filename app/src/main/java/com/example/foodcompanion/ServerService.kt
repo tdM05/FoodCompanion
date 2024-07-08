@@ -1,4 +1,4 @@
-package com.example.yourapp
+package com.example.foodcompanion
 
 import android.app.Service
 import android.content.Intent

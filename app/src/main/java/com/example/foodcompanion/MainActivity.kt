@@ -34,6 +34,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             LoginPage()
         }
+        val serverIntent = Intent(this, ServerService::class.java)
+        startService(serverIntent)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Stop the server service
+        val serverIntent = Intent(this, ServerService::class.java)
+        stopService(serverIntent)
     }
 }
 
