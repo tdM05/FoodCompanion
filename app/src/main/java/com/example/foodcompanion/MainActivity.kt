@@ -1,5 +1,6 @@
 package com.example.foodcompanion
-
+import android.content.Intent
+import com.example.foodcompanion.ServerService
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
