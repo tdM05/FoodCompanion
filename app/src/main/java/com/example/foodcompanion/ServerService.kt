@@ -1,11 +1,12 @@
 package com.example.foodcompanion
-
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import java.io.ObjectInputStream
+import java.net.InetAddress
 import java.net.ServerSocket
+
 
 class ServerService : Service() {
 
@@ -29,8 +30,11 @@ class ServerService : Service() {
     private inner class ServerRunnable : Runnable {
         override fun run() {
             try {
-                val serverSocket = ServerSocket(12345)
-                Log.d("ServerService", "Server running on port ${serverSocket.localPort}")
+                val serverPort = 12345
+                val serverIpAddress = "10.0.2.1"
+                val serverSocket = ServerSocket(serverPort, 0, InetAddress.getByName(serverIpAddress))
+                Log.d("ServerService", "Server running on IP $serverIpAddress and port $serverPort")
+
 
                 while (!Thread.currentThread().isInterrupted) {
                     val clientSocket = serverSocket.accept()
@@ -58,6 +62,7 @@ class ServerService : Service() {
                 serverSocket.close()
             } catch (e: Exception) {
                 e.printStackTrace()
+                Log.d("ServerService","Failed to start server")
             }
         }
     }
