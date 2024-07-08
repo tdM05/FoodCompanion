@@ -11,6 +11,12 @@ import com.example.foodcompanion.Main
 
 
 
+object UserInformation {
+    var institutionID: String = ""
+    var patientID: String = ""
+    var birthday: String = ""
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

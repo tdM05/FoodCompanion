@@ -1,5 +1,6 @@
 package uicommunicator
 import android.util.Log
+import com.example.foodcompanion.UserInformation
 
 fun verifyID(
     patientID: String,
@@ -21,7 +22,15 @@ fun verifyID(
 
     var accepted = true  // the server should verify this!
 
+    /*TODO
+    Verify accepted here
+    * */
+
     if (accepted) {
+        UserInformation.birthday = birthday
+        UserInformation.patientID = patientID
+        UserInformation.institutionID = institutionID
+        // this goes to main page
         pageToNavigateTo()
     }
 }
