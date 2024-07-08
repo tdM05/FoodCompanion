@@ -2,14 +2,18 @@ package com.example.foodcompanion
 import android.content.Intent
 import com.example.foodcompanion.ServerService
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,42 +53,54 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun LoginPage(modifier: Modifier = Modifier) {
+    val spaceHeight = 26.dp
     Column (
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(100.dp))
         // This is the title
         Text(text = "Food Companion", fontSize = 60.sp, lineHeight = 60.sp, textAlign = TextAlign.Center)
-        //These are input fields
-        TextInputField("Institution ID", modifier = Modifier.padding(16.dp))
-        TextInputField("Patient ID", modifier = Modifier.padding(16.dp))
+
+        Spacer(modifier = Modifier.height(spaceHeight))
+
+        //patient ID
+        var patientID by remember { mutableStateOf("") }
+        TextField(
+            value = patientID,
+            onValueChange = { patientID = it },
+            label = { Text("patient ID") },
+            modifier = modifier,
+        )
+
+        Spacer(modifier = Modifier.height(spaceHeight))
+
+        //institutionID
+        var institutionID by remember { mutableStateOf("") }
+        TextField(
+            value = institutionID,
+            onValueChange = { institutionID = it },
+            label = { Text("Institution ID") },
+            modifier = modifier,
+        )
+
+        Spacer(modifier = Modifier.height(spaceHeight))
+
         //This is the button
+        Button(onClick = { verifyID(patientID, institutionID) }) {
+            Text("Log In")
+        }
     }
 }
 
-@Composable
-fun TextInputField(label: String, initialString: String = "", modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf(initialString) }
-    TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = { Text(label) },
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun PatientID(modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
-    TextField(
-        value = text,
-        onValueChange = { text = it },
-        label = { Text("Label") },
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
 fun TextFieldPreview() {
     LoginPage()
+}
+
+fun verifyID(patientID: String, institutionID: String = ""){
+    Log.d("debug", "patientID: " + patientID + ", " + "institutionID: " +
+    institutionID)
 }
