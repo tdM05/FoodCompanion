@@ -1,7 +1,11 @@
 package uicommunicator
 import android.util.Log
 
-fun verifyID(patientID: String, institutionID: String, birthday: String) {
+fun verifyID(
+    patientID: String,
+    institutionID: String,
+    birthday: String,
+    pageToNavigateTo: () -> Unit) {
     /*
     This function is called after the user enters a valid Institution and school id and presses enter.
     This should communicate with the server to request validation of the user profile.
@@ -18,7 +22,7 @@ fun verifyID(patientID: String, institutionID: String, birthday: String) {
     var accepted = true  // the server should verify this!
 
     if (accepted) {
-
+        pageToNavigateTo()
     }
 }
 

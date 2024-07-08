@@ -22,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import uicommunicator.verifyID
 
 @Composable
-fun LoginPage(modifier: Modifier = Modifier) {
+fun LoginPage(
+    pageToNavigateTo: () -> Unit = {},
+    modifier: Modifier = Modifier) {
     val spaceHeight = 26.dp
     Column (
         modifier = Modifier.fillMaxSize(),
@@ -70,12 +72,11 @@ fun LoginPage(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(spaceHeight))
 
         //This is the button
-        Button(onClick = { verifyID(patientID, institutionID, birthday) }) {
+        Button(onClick = { verifyID(patientID, institutionID, birthday, pageToNavigateTo) }) {
             Text("Log In")
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
