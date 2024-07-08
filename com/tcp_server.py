@@ -16,7 +16,7 @@ The FoodCompanion app was contributed to by (GitHub usernames sorted alphabetica
 
 """
 
-import click, select, sys, hashlib, rsa, socket, re, random
+import click, select, sys, hashlib, rsa, socket, re, random, json
 from datetime import datetime
 from threading import Thread, Event, Timer
 from typing import cast, Type, Any, Dict, Tuple
@@ -24,27 +24,18 @@ from typing import cast, Type, Any, Dict, Tuple
 
 try:
     from . import data as sc_data
+    from . import db as sc_db
+
     _EXT_SC_CALL = True
 
 except ImportError:
     import data as sc_data
+    import db as sc_db
+
     _EXT_SC_CALL = False
 
-
-# Constants
-
-SHA3_256_HASH_SIZE = 64
-SESSION_TOKEN_SIZE = 32
-DATETIME_FRMT_SIZE = 14
-APP_VI_STRING_SIZE = 6
-TIME_FRMT_SIZE     = 6
-DATE_FRMT_SIZE     = 8
-NEW_CONN_CODE      = b'NW_CON'
-RSA_N_E_DELIM      = b'!'
-
-# Header
-
 # Server Management
+
 
 class _S_THREAD(Thread):
 
@@ -71,7 +62,7 @@ _SERVER_THREAD: _S_THREAD
 
 class Server:
     __is_alive: bool = True
-    __sessions: Dict[str, Any] = {}
+    __sessions: Dict[str, Tuple[rsa.PublicKey, rsa.PrivateKey]] = {}
     __cost_timer = 15
 
     def request_exit(self) -> None:
@@ -156,12 +147,17 @@ class Server:
         self.__socket.setblocking(False)
 
         while Server.__is_alive:
-            R, *_ = select.select(
-                [self.__socket, *[c[0] for c in self.__connections.values() if not c[0]._closed]],
-                [],
-                [c[0] for c in self.__connections.values()],
-                sc_data.SRVC_SL_TIMEOUT
-            )
+            try:
+                R, *_ = select.select(
+                    [self.__socket, *[c[0] for c in self.__connections.values() if not c[0]._closed]],
+                    [],
+                    [c[0] for c in self.__connections.values()],
+                    sc_data.SRVC_SL_TIMEOUT
+                )
+
+            except:
+                self._clear_ost()
+                continue  # Go back to the top of the loop and try again.
 
             for r in R:
                 if r is self.__socket:
@@ -182,8 +178,6 @@ class Server:
         self._shutdown()
 
     def _handle_client(self, __c_name: str) -> None:
-        global SHA3_256_HASH_SIZE, SESSION_TOKEN_SIZE, DATETIME_FRMT_SIZE, NEW_CONN_CODE
-
         sys.stdout.write(f'[{__c_name}] Replying.\n')
 
         _conn, *_ = self.__connections[__c_name]
@@ -195,7 +189,7 @@ class Server:
 
             return
 
-        if NEW_CONN_CODE in _rcv:
+        if sc_data.NEW_CONN_CODE in _rcv:
             try:
                 self._new_client(_rcv, __c_name)
                 _conn.close()
@@ -217,40 +211,94 @@ class Server:
 
                 return
 
-        sys.stdout.write(f'[{__c_name}] Done.\n')
+        sys.stdout.write(f'[{__c_name}] Done.\n\n')
 
         self.__threads[__c_name].done()
         self._remove(__c_name)
 
     def _new_client(self, __rcv: bytes, __c_name: str) -> None:
-        global NEW_CONN_CODE, APP_VI_STRING_SIZE, RSA_N_E_DELIM
+        assert len(__rcv) >= (len(sc_data.NEW_CONN_CODE) + sc_data.APP_VI_STRING_SIZE), 'Bad Request (0)'
 
-        assert len(__rcv) >= (len(NEW_CONN_CODE) + APP_VI_STRING_SIZE), 'Bad Request (0)'
+        cd = __rcv[:len(sc_data.NEW_CONN_CODE):]
+        vi = int(__rcv[len(sc_data.NEW_CONN_CODE)::])
 
-        cd = __rcv[:len(NEW_CONN_CODE):]
-        vi = int(__rcv[len(NEW_CONN_CODE)::])
-
-        print(cd, vi)
-
-        assert cd == NEW_CONN_CODE,                                     'Bad Request (1)'
-        assert Server.is_compatible(int(vi)),                           'Incompatible client version.'
+        assert cd == sc_data.NEW_CONN_CODE,                                             'Bad Request (1)'
+        assert Server.is_compatible(int(vi)),                                           'Incompatible client version.'
 
         # The app is compatible, make a session token, RSA encryption key, and send it over.
         _conn, _addr, *_ = self.__connections[__c_name]
 
         # Create the RSA key
         (__pb, __pr) = rsa.newkeys(512)
-        self.__connections[__c_name] = (_conn, _addr, __pb, __pr)
+        _ses_tok = Server.gen_ses_tok(_addr[1])
 
-        dout =  NEW_CONN_CODE
-        dout += Server.gen_ses_tok(_addr[1]).encode()
-        dout += str(__pb.n).encode() + RSA_N_E_DELIM + str(__pb.e).encode()
+        self.__connections[__c_name] = (_conn, _addr, __pb, __pr)
+        self.__sessions[_ses_tok] = (__pb, __pr)
+
+        sys.stdout.write(f'[{__c_name}] New session {_ses_tok}\n')
+
+        dout =  sc_data.NEW_CONN_CODE
+        dout += _ses_tok.encode()
+        dout += str(__pb.n).encode() + sc_data.RSA_N_E_DELIM + str(__pb.e).encode()
 
         sys.stdout.write(f'[{__c_name}] {dout=}\n')
         _conn.send(dout)
 
     def _old_client(self, __rcv: bytes, __c_name: str) -> None:
-        print(__rcv, __c_name)
+        _std_hdr_len = sum([i.SIZE for i in sc_data.HeaderItems.items()])
+        _conn, *_ = self.__connections[__c_name]
+
+        if len(__rcv) < _std_hdr_len:
+            # We need to receive the rest of the header to complete the decoding process.
+            _n_bytes = _std_hdr_len - len(__rcv)
+            _rest_of_hdr = _conn.recv(_n_bytes)
+
+            assert len(_rest_of_hdr) == _n_bytes, 'Could not receive a complete header.'
+            __rcv += _rest_of_hdr
+
+        # Decode the header
+        print(_std_hdr_len, __rcv[:_std_hdr_len])
+        _hdr = sc_data.HeaderUtils.load_header(__rcv[:_std_hdr_len], sc_data.HEADER_PAD_BYTE)
+
+        _complete_message_len = _std_hdr_len + sc_data.SHA3_256_HASH_SIZE + _hdr.H_MSG_LEN
+        _il = len(__rcv)
+
+        if _complete_message_len <= _il:
+            __rcv += _conn.recv(_complete_message_len - _il)
+
+            assert len(__rcv) == _complete_message_len, 'Could not receive complete message.'
+
+        _chk = __rcv[_std_hdr_len:_std_hdr_len + sc_data.SHA3_256_HASH_SIZE:].decode()
+        _msg = __rcv[_std_hdr_len + sc_data.SHA3_256_HASH_SIZE::]
+
+        rx = sc_data.Transmission(_hdr, _chk, _msg)
+        comp_hash = hashlib.sha3_256(rx.message).hexdigest()
+
+        assert rx.msg_hash == comp_hash, f'E({rx.msg_hash}) | R({comp_hash})'
+        __prk = Server.__sessions[rx.header.H_SES_TOK][-1]
+
+        __msg_dec = rsa.decrypt(rx.message, __prk)
+        __inst_id, __p_dob, __p_uid = __msg_dec.split(sc_data.MESSAGE_DELIM)
+
+        pt_diet = sc_db.lookup_patient_diet(__inst_id, int(__p_dob), int(__p_uid))
+
+        def _reply_to(__conn: socket.socket, __message: bytes, __ses_tok: str) -> None:
+            _o_chk = hashlib.sha3_256(__message).hexdigest().encode()
+            _o_hdr = sc_data.HeaderUtils.create_bytes(__message, __ses_tok, True)
+
+            __conn.send(_o_hdr + _o_chk + __message)
+
+        if pt_diet is None:
+            sys.stderr.write(f'[{__c_name}] Patient not found.\n')
+
+            # Send back the patient not found error code.
+            _reply_to(_conn, sc_data.CD_PATIENT_NOT_FOUND.encode(), rx.header.H_SES_TOK)
+
+            assert False, 'Patient not found.'
+
+        # Send meal options
+        _reply_to(_conn, json.dumps(sc_db.get_meal_options(pt_diet)).encode(), rx.header.H_SES_TOK)
+        sys.stdout.write(f"[{__c_name}] Sent out {pt_diet.name} meal options.\n")
 
         return
 
@@ -264,7 +312,7 @@ class Server:
 
         try:
             self.__curr_task.cancel()
-        except Exception as E:
+        except Exception:
             pass
 
         self.__socket.close()
@@ -319,7 +367,7 @@ def exception_hook(exc_type: Type[BaseException], value: Any, traceback: Any) ->
         sc_quit()
 
     else:
-        Server.request_exit()
+        __server.request_exit()
         sys.__excepthook__(exc_type, value, traceback)
         sc_quit()
 

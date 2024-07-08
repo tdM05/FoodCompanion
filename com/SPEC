@@ -82,4 +82,4 @@ There are 5 items in the header (they must be in the following order):
         Description: Message length
         Data Type:   Integer
         Length:      6 characters
-        Padding:     PREPEND with '0'.
+        Padding:     PREPEND with '='.

@@ -12,8 +12,8 @@ If you've setup a static IP, you may modify the following line of code per the c
     |
     | ...
     | class TCP:
-    |       IP = socket.gethostbyname(socket.gethostname())
-    |
+    |       # IP = socket.gethostbyname(socket.gethostname())
+    |       IP = '0.0.0.0' # Host on all IPs
     |       # Have a static IP ready for this server?
     |       # Host your server at that IP by modifying the above line as follows:
     |       # IP = '192.0.0.1'
