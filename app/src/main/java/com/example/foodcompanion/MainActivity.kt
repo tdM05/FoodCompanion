@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uicommunicator.*
+import com.example.foodcompanion.screens.LoginPage
+
 
 
 class MainActivity : ComponentActivity() {
@@ -48,52 +50,5 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun LoginPage(modifier: Modifier = Modifier) {
-    val spaceHeight = 26.dp
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = Modifier.height(100.dp))
-        // This is the title
-        Text(text = "Food Companion", fontSize = 60.sp, lineHeight = 60.sp, textAlign = TextAlign.Center)
 
-        Spacer(modifier = Modifier.height(spaceHeight))
-
-        //patient ID
-        var patientID by remember { mutableStateOf("") }
-        TextField(
-            value = patientID,
-            onValueChange = { patientID = it },
-            label = { Text("patient ID") },
-            modifier = modifier,
-        )
-
-        Spacer(modifier = Modifier.height(spaceHeight))
-
-        //institutionID
-        var institutionID by remember { mutableStateOf("") }
-        TextField(
-            value = institutionID,
-            onValueChange = { institutionID = it },
-            label = { Text("Institution ID") },
-            modifier = modifier,
-        )
-
-        Spacer(modifier = Modifier.height(spaceHeight))
-
-        //This is the button
-        Button(onClick = { verifyID(patientID, institutionID) }) {
-            Text("Log In")
-        }
-    }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun TextFieldPreview() {
-    LoginPage()
-}
 
