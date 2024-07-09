@@ -18,7 +18,7 @@ class Client : Runnable {
             // Send data to server
             val outputStream: OutputStream = client.outputStream
             // Change the message to send to server
-            val message = "Hello from the client!"
+            val message = "NW_CON20240708122100"
             outputStream.write(message.toByteArray())
 
             // Receive response from server
