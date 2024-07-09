@@ -17,7 +17,8 @@ object UserInformation {
     var birthday: String = ""
 }
 
-class MainActivity : ComponentActivity() {
+
+class MainActivity : ComponentActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,7 +26,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             Main()
         }
-        Thread(Client()).start()
     }
 
 }

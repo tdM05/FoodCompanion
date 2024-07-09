@@ -4,29 +4,42 @@ import android.util.Log
 import java.net.Socket
 
 
+data class TCPInfo 
+(
+    var connected: Boolean              = false,
+    var pubKey: String?                 = null,
+    var sessionToken: String?           = null,
+    var appVersion: Long                = 20240708122100
+)
+
+var globalTCPInfo: TCPInfo?             = null
+
 class Client : Runnable {
 
+    private val SC: String              = "TCPClient"
+
     private var connected: Boolean      = false
-    private var rsaN: String?           = null
-    private var rsaE: String?           = null
+    private var pubKey: String?         = null
     private var sessionToken: String?   = null
     private var appVersion: Long        = 20240708122100
 
-    val isConnected: Boolean get() = connected
-    val getAppVersion: Long get() = appVersion
+    private val isConnected: Boolean get() = connected
+    private val getAppVersion: Long get() = appVersion
 
-    private fun com() : Boolean {
-        val ip = "192.168.56.1"
+    val tcpInfo: TCPInfo get() = TCPInfo(connected, pubKey, sessionToken, appVersion)
+
+    private fun connectToServer() : Boolean {
+        val ip   = "192.168.56.1"
         val port = 12345
         val client = Socket(ip, port)
 
         if (client.isConnected)
         {
-            Log.d("TCPService", "Connected to $ip:$port")
+            Log.d(SC, "Connected to $ip:$port")
         }
         else
         {
-            Log.e("TCPService", "Could not connect to TCP server.")
+            Log.e(SC, "Could not connect to TCP server.")
             return false
         }
 
@@ -44,36 +57,31 @@ class Client : Runnable {
 
         if (inputBytes == -1)
         {
-            Log.e("TCPService", "Did not receive message from server (0).")
+            Log.e(SC, "Did not receive message from server (0).")
             return false
         }
 
         try {
 
             val inputStr = String(inputBuff, 0, inputBytes)
-            Log.d("TCPService", "RCV:RAW $inputStr")
+            Log.d(SC, "RCV:RAW $inputStr")
             assert(inputStr.length > 5)
 
             val cd = inputStr.subSequence(0, 6)
             assert(cd == "NW_CON")          // Login successful
 
-            val sesTok = inputStr.subSequence(6, 38)
-            val pubKey = inputStr.subSequence(38, inputStr.lastIndex + 1)
+            sessionToken = inputStr.subSequence(6, 38).toString()
+            pubKey = inputStr.subSequence(38, inputStr.lastIndex + 1).toString()
 
-            sessionToken = sesTok.toString()
-            val delim_index = pubKey.indexOf('!', 0, true)
-
-            rsaN = pubKey.subSequence(0, delim_index).toString()
-            rsaE = pubKey.subSequence(delim_index + 1, pubKey.lastIndex + 1).toString()
-
-            Log.i("TCPService", "Received $cd, $sessionToken, $rsaN, $rsaE")
+            Log.i(SC, "Received $cd, $sessionToken, $pubKey")
 
             client.close()
             return true
-
         }
-        catch (e: Exception) {
+        catch (e: Exception)
+        {
             Log.e("TCPService", "Did not receive message from server (1): ${e.toString()}.")
+
             client.close()
             return false
         }
@@ -82,15 +90,19 @@ class Client : Runnable {
 
     override fun run() {
 
-        if (!com())
+        if (!connectToServer())
         {
             Log.e("TCPService", "[FATAL] Could not connect to server.")
+            connected = false
             // TODO: Error screen for user.
         }
         else
         {
             Log.i("TCPService", "Connected to server successfully.")
+            connected = true
         }
+
+        globalTCPInfo = tcpInfo
 
     }
 }
