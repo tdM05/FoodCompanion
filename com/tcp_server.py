@@ -17,6 +17,7 @@ The FoodCompanion app was contributed to by (GitHub usernames sorted alphabetica
 """
 
 import select, sys, hashlib, rsa, socket, re, random, json
+from time import sleep
 from datetime import datetime
 from threading import Thread, Event, Timer
 from typing import cast, Type, Any, Dict, Tuple
@@ -67,7 +68,7 @@ class Server:
 
     @staticmethod
     def is_compatible(vi: int) -> bool:
-        return True
+        return vi >= 20240708000000
 
     @staticmethod
     def gen_ses_tok(__salt: Any) -> str:
@@ -145,6 +146,8 @@ class Server:
     def _main_loop(self) -> None:
         global _SERVER_THREAD
 
+        self.__socket.setblocking(False)
+
         self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
         self.__curr_task.start()
 
@@ -168,7 +171,7 @@ class Server:
                 if r == self.__socket:
                     _conn, _addr = cast(socket.socket, r).accept()
 
-                    _conn.setblocking(False)
+                    _conn.setblocking(True)
 
                     _c_name = '%s%d-%d' % (*cast(Tuple[str, int], _addr), random.randint(100, 999))
 
@@ -188,6 +191,8 @@ class Server:
         _conn, *_ = self.__connections[__c_name]
         _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
 
+        print(_rcv)
+
         if not _rcv:
             sys.stderr.write(f'[{__c_name}] Connection closed.\n')
             self._remove(__c_name)
@@ -197,24 +202,53 @@ class Server:
         if sc_data.NEW_CONN_CODE in _rcv:
             try:
                 self._new_client(_rcv, __c_name)
+                _conn.close()
 
             except AssertionError as _AE:
                 sys.stderr.write(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE)}\n')
-                _conn.close()
+                _conn.send(str(_AE).encode())
                 self._remove(__c_name)
 
                 return
 
-        else:
+        elif _rcv[:sc_data.DATETIME_FRMT_SIZE].decode().isnumeric():  # The first part of the header must be the date
             try:
                 self._old_client(_rcv, __c_name)
                 _conn.close()
 
             except AssertionError as _AE:
                 sys.stderr.write(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE)}\n')
+                _conn.send(str(_AE).encode())
                 self._remove(__c_name)
 
                 return
+
+        else:
+            if b'GET' in _rcv and b'HTTP' in _rcv: # This is an HTTP request
+                hdrs, sep, body = _rcv.partition(b'\r\n\r\n')
+                hdrs = hdrs.decode()
+
+                html_body = "<html><body><h1>FoodCompanion</h1><p>This is a TCP server, not an HTTP server.</p></body></html>"
+                resp_hdrs = {
+                    'Content-Type':     'text/html; encoding=utf8',
+                    'Content-Length':   len(html_body),
+                    'Connection':       'close'
+                }
+
+                resp_hdr_str = ''.join('%s: %s\r\n' % (h, v) for h, v in resp_hdrs.items())
+                resp_proto = 'HTTP/1.1'
+                resp_status = '200'
+                resp_status_text = 'OK'
+
+                _reply = ('%s %s %s\r\n' % (resp_proto, resp_status, resp_status_text)).encode()
+                _conn.sendall(_reply)
+                _conn.sendall(resp_hdr_str.encode())
+                _conn.sendall(b'\r\n')
+                _conn.sendall(html_body.encode())
+
+                sleep(5)
+
+            _conn.close()
 
         sys.stdout.write(f'[{__c_name}] Done.\n\n')
 
@@ -256,6 +290,7 @@ class Server:
         if len(__rcv) < _std_hdr_len:
             # We need to receive the rest of the header to complete the decoding process.
             _n_bytes = _std_hdr_len - len(__rcv)
+
             _rest_of_hdr = _conn.recv(_n_bytes)
 
             assert len(_rest_of_hdr) == _n_bytes, 'Could not receive a complete header.'
@@ -380,7 +415,7 @@ def _start() -> None:
         "-----------------------------------------------\r\n",
         "                                               \r\n",
         "       MediHacks 2024 | FoodCompanion App      \r\n",
-        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.IP}) \r\n",
+        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.PORT}) \r\n",
         "                                               \r\n",
         "-----------------------------------------------\r\n"
     ])

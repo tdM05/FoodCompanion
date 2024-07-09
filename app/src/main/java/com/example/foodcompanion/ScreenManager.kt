@@ -27,10 +27,12 @@ fun Main (){
             )
         }
         composable(route = Screens.Main.name) {
-            MainPage()
+            MainPage(){
+                navController.navigate(Screens.Foods.name)
+            }
         }
         composable(route = Screens.Foods.name) {
-            FoodsPage()
+            FoodsPage(){navController.navigate(Screens.Main.name)}
         }
     }
 }
