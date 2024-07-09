@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.res.painterResource
 import com.example.foodcompanion.*
 import com.example.foodcompanion.screens.MainPage
 
@@ -23,7 +24,6 @@ class MainActivity : ComponentActivity() {
         // create a LoginCalls object to call stuff in the ui
         setContent {
             Main()
-            //MainPage()
         }
         Thread(Client()).start()
     }

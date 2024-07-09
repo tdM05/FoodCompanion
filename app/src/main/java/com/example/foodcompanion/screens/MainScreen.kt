@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -21,19 +23,26 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
 
 object Notification {
@@ -44,8 +53,10 @@ object Notification {
 fun MainPage(
     onNextButtonClicked: () -> Unit = {},
 ) {
+    var mealStatus = false
+    Column (
 
-    Column {
+    ){
         Spacer(modifier = Modifier.height(40.dp))
         // header
         Row {
@@ -84,8 +95,13 @@ fun MainPage(
                 modifier = Modifier.padding(16.dp)
             )
 
-            val columnModifier = Modifier.size(100.dp).weight(10f, fill = true).padding(1.dp)
-            val iconModifier = Modifier.size(1000.dp).align(Alignment.CenterHorizontally)
+            val columnModifier = Modifier
+                .size(100.dp)
+                .weight(10f, fill = true)
+                .padding(1.dp)
+            val iconModifier = Modifier
+                .size(1000.dp)
+                .align(Alignment.CenterHorizontally)
             Row (horizontalArrangement = Arrangement.Center){
                 Column (modifier = columnModifier){
                     Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -101,7 +117,7 @@ fun MainPage(
                     }
                 }
                 Column (modifier = columnModifier){
-                    Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text("Lunch", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
                         onClick = { /*TODO*/ },
                         modifier = iconModifier
@@ -114,7 +130,7 @@ fun MainPage(
                     }
                 }
                 Column (modifier = columnModifier){
-                    Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text("Dinner", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
                         onClick = { /*TODO*/ },
                         modifier = iconModifier
@@ -125,6 +141,60 @@ fun MainPage(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        //My meal
+        val myMealFont = 60.sp
+        val statusFont = 12.sp
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        ){
+            Row (verticalAlignment = Alignment.CenterVertically){
+                Text(text = "My Meal", fontSize = myMealFont, modifier = Modifier.padding(16.dp))
+                if (mealStatus == true) {
+                    IconButton(onClick = { /*TODO*/ },
+                        Modifier
+                            .size(50.dp)
+                            .padding(8.dp)) {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
+                            ),
+                            contentDescription = null
+                        )
+                    }
+                }
+                else{
+                    Text(text = "(not ready)", fontSize = statusFont, modifier = Modifier.padding(16.dp))
+                    IconButton(onClick = { /*TODO*/ },
+                        Modifier
+                            .size(50.dp)
+                            .padding(8.dp)) {
+                        Icon(
+                            painter = painterResource(
+                                id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
+                            ),
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+            if (mealStatus == true){
+                Text(text = "Nothing Here", fontSize = 16.sp, modifier = Modifier
+                    .alpha(0.4f)
+                    .align(Alignment.CenterHorizontally)
+                    .padding(80.dp))
+            }
+            else{
+                repeat(120){
+                    FoodWidget(
+                        foodName = "Brocolli",
+                        foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
+                        servingSize = "16g",
+                        foodCategory = "Vegetables",)
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
             }
         }
