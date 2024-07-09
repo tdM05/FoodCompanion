@@ -1,42 +1,96 @@
 package com.example.foodcompanion
 
 import android.util.Log
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
-import java.net.InetAddress
 import java.net.Socket
-import java.net.UnknownHostException
+
 
 class Client : Runnable {
 
-    override fun run() {
+    private var connected: Boolean      = false
+    private var rsaN: String?           = null
+    private var rsaE: String?           = null
+    private var sessionToken: String?   = null
+    private var appVersion: Long        = 20240708122100
+
+    val isConnected: Boolean get() = connected
+    val getAppVersion: Long get() = appVersion
+
+    private fun com() : Boolean {
+        val ip = "192.168.56.1"
+        val port = 12345
+        val client = Socket(ip, port)
+
+        if (client.isConnected)
+        {
+            Log.d("TCPService", "Connected to $ip:$port")
+        }
+        else
+        {
+            Log.e("TCPService", "Could not connect to TCP server.")
+            return false
+        }
+
+        val oStream = client.outputStream
+        val iStream = client.inputStream
+
+        val loginMsg = "NW_CON${getAppVersion}".toByteArray(Charsets.UTF_8)
+
+        // Send the login message
+        oStream.write(loginMsg)
+
+        // Get the information.
+        val inputBuff = ByteArray(1024)
+        val inputBytes = iStream.read(inputBuff)
+
+        if (inputBytes == -1)
+        {
+            Log.e("TCPService", "Did not receive message from server (0).")
+            return false
+        }
+
         try {
-            // Specify the IP and the port (needs to be the same as the server)
-            val client = Socket("10.0.2.2", 12345)
 
-            // Send data to server
-            val outputStream: OutputStream = client.outputStream
-            // Change the message to send to server
-            val message = "NW_CON20240708122100"
-            outputStream.write(message.toByteArray())
+            val inputStr = String(inputBuff, 0, inputBytes)
+            Log.d("TCPService", "RCV:RAW $inputStr")
+            assert(inputStr.length > 5)
 
-            // Receive response from server
-            val inputStream: InputStream = client.inputStream
-            val buffer = ByteArray(1024)
-            val bytesRead = inputStream.read(buffer)
-            // If it is a valid message then print it
-            if (bytesRead != -1) {
-                val response = String(buffer, 0, bytesRead)
-                Log.d("ClientService","Received response from server: $response")
-                // Handle the response as needed
-            }
+            val cd = inputStr.subSequence(0, 6)
+            assert(cd == "NW_CON")          // Login successful
+
+            val sesTok = inputStr.subSequence(6, 38)
+            val pubKey = inputStr.subSequence(38, inputStr.lastIndex + 1)
+
+            sessionToken = sesTok.toString()
+            val delim_index = pubKey.indexOf('!', 0, true)
+
+            rsaN = pubKey.subSequence(0, delim_index).toString()
+            rsaE = pubKey.subSequence(delim_index + 1, pubKey.lastIndex + 1).toString()
+
+            Log.i("TCPService", "Received $cd, $sessionToken, $rsaN, $rsaE")
 
             client.close()
-        } catch (e: UnknownHostException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
+            return true
+
         }
+        catch (e: Exception) {
+            Log.e("TCPService", "Did not receive message from server (1): ${e.toString()}.")
+            client.close()
+            return false
+        }
+
+    }
+
+    override fun run() {
+
+        if (!com())
+        {
+            Log.e("TCPService", "[FATAL] Could not connect to server.")
+            // TODO: Error screen for user.
+        }
+        else
+        {
+            Log.i("TCPService", "Connected to server successfully.")
+        }
+
     }
 }
