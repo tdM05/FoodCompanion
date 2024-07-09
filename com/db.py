@@ -2,6 +2,14 @@ import data as sc_data, sqlite3
 from typing import Dict, Any
 
 
+class DB:
+    def __init__(self) -> None:
+        self.__conn = sqlite3.connect("pt.db")
+        self.__curr = self.__conn.cursor()
+
+    def _crtn(self) -> None:
+        self.__curr.execute("CREATE TABLE pt(")
+
 def lookup_patient_diet(
         __inst_id:  str,
         __p_dob:    int,
