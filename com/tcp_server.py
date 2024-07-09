@@ -67,7 +67,7 @@ class Server:
 
     @staticmethod
     def is_compatible(vi: int) -> bool:
-        return True
+        return vi >= 20240708000000
 
     @staticmethod
     def gen_ses_tok(__salt: Any) -> str:
@@ -145,6 +145,8 @@ class Server:
     def _main_loop(self) -> None:
         global _SERVER_THREAD
 
+        self.__socket.setblocking(False)
+
         self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
         self.__curr_task.start()
 
@@ -168,7 +170,7 @@ class Server:
                 if r == self.__socket:
                     _conn, _addr = cast(socket.socket, r).accept()
 
-                    _conn.setblocking(False)
+                    _conn.setblocking(True)
 
                     _c_name = '%s%d-%d' % (*cast(Tuple[str, int], _addr), random.randint(100, 999))
 
@@ -187,6 +189,8 @@ class Server:
 
         _conn, *_ = self.__connections[__c_name]
         _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
+
+        print(_rcv)
 
         if not _rcv:
             sys.stderr.write(f'[{__c_name}] Connection closed.\n')
@@ -256,6 +260,7 @@ class Server:
         if len(__rcv) < _std_hdr_len:
             # We need to receive the rest of the header to complete the decoding process.
             _n_bytes = _std_hdr_len - len(__rcv)
+
             _rest_of_hdr = _conn.recv(_n_bytes)
 
             assert len(_rest_of_hdr) == _n_bytes, 'Could not receive a complete header.'
@@ -380,7 +385,7 @@ def _start() -> None:
         "-----------------------------------------------\r\n",
         "                                               \r\n",
         "       MediHacks 2024 | FoodCompanion App      \r\n",
-        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.IP}) \r\n",
+        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.PORT}) \r\n",
         "                                               \r\n",
         "-----------------------------------------------\r\n"
     ])
