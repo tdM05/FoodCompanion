@@ -51,7 +51,7 @@ object Notification {
 
 @Composable
 fun MainPage(
-    onNextButtonClicked: () -> Unit = {},
+    onFoodButtonClicked: () -> Unit = {},
 ) {
     var mealStatus = false
     Column (
@@ -106,7 +106,7 @@ fun MainPage(
                 Column (modifier = columnModifier){
                     Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = onFoodButtonClicked,
                         modifier = iconModifier
                     ) {
                         Image(
@@ -119,7 +119,7 @@ fun MainPage(
                 Column (modifier = columnModifier){
                     Text("Lunch", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = onFoodButtonClicked,
                         modifier = iconModifier
                         ) {
                         Image(
@@ -132,7 +132,7 @@ fun MainPage(
                 Column (modifier = columnModifier){
                     Text("Dinner", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = onFoodButtonClicked,
                         modifier = iconModifier
                         ) {
                         Image(
