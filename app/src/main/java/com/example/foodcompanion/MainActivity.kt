@@ -25,8 +25,7 @@ class MainActivity : ComponentActivity() {
             Main()
             //MainPage()
         }
-        val serverIntent = Intent(this, ServerService::class.java)
-        startService(serverIntent)
+        Thread(Client()).start()
     }
 
 }
