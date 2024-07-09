@@ -278,7 +278,8 @@ class Server:
 
         dout =  sc_data.NEW_CONN_CODE
         dout += _ses_tok.encode()
-        dout += str(__pb.n).encode() + sc_data.RSA_N_E_DELIM + str(__pb.e).encode()
+        # dout += str(__pb.n).encode() + sc_data.RSA_N_E_DELIM + str(__pb.e).encode()
+        dout += __pb.save_pkcs1('PEM')
 
         sys.stdout.write(f'[{__c_name}] {dout=}\n')
         _conn.send(dout)
