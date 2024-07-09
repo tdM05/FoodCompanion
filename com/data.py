@@ -222,8 +222,9 @@ class MealOption(Enum):
     (
         REGULAR,
         DIABETIC,
-        LOW_CHOLESTEROL
-    ) = range(3)
+        LOW_CHOLESTEROL,
+        LOW_SODIUM
+    ) = range(4)
 
 
 @dataclass
