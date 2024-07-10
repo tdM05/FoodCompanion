@@ -63,10 +63,10 @@ fun LoginPage(
             modifier = modifier,
         )
 
-        Spacer(modifier = Modifier.height(spaceHeight))
-
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "Date of Birth", fontSize = 18.sp,
+            modifier = Modifier.align(Alignment.Start).padding(horizontal = 56.dp, vertical = 8.dp))
         //date of birth
-
         Row (modifier = Modifier.width(301.dp)){
             val birthdayMod = Modifier
                 .weight(1f)
