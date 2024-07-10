@@ -23,11 +23,10 @@ fun Main (){
     ) {
         composable(route = "Login") {
             LoginPage(
-                pageToNavigateTo = {navController.navigate("Main/None")}
+                pageToNavigateTo = {navController.navigate("Main")}
             )
         }
-        composable(route = "Main/{id}") {
-            val data = it.arguments?.getString("id") ?: "None"
+        composable(route = "Main") {
 
             MainPage(){
                 navController.navigate("Foods")
@@ -35,7 +34,7 @@ fun Main (){
         }
         composable(route = "Foods") {
             FoodsPage(){
-                navController.navigate("Main/message")
+                navController.navigate("Main")
             }
         }
     }

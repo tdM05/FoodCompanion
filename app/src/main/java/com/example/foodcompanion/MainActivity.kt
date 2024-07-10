@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity()  {
         // create a LoginCalls object to call stuff in the ui
         setContent {
             Main()
+            //MainPage()
         }
     }
 
