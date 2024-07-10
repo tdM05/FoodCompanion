@@ -1,0 +1,87 @@
+{
+  "categories": [
+    {
+      "categoryName": "Entrees",
+      "foods": [
+        {
+          "id": "1",
+          "name": "Grilled Chicken",
+          "calories": 250,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 0.0,
+              "fiber": 0.0
+            },
+            "proteins": 30.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 2.0
+            }
+          }
+        },
+        {
+          "id": "2",
+          "name": "Brown Rice",
+          "calories": 150,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 0.0,
+              "fiber": 2.0
+            },
+            "proteins": 3.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "categoryName": "Starches",
+      "foods": [
+        {
+          "id": "2",
+          "name": "Brown Rice",
+          "calories": 150,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 0.0,
+              "fiber": 2.0
+            },
+            "proteins": 3.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.5
+            }
+          }
+        }
+      ]
+    },
+    {
+      "categoryName": "Vegetables",
+      "foods": [
+        {
+          "id": "3",
+          "name": "Broccoli",
+          "calories": 50,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 2.0,
+              "fiber": 2.0
+            },
+            "proteins": 3.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.5
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
