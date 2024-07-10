@@ -116,7 +116,7 @@ fun MainPage(
                     IconButton(
                         onClick = onFoodButtonClicked,
                         modifier = iconModifier
-                    ) {
+                        ) {
                         Image(
                             painter = painterResource(id = R.drawable.breakfast_image),
                             contentDescription = "breakfast",
@@ -129,7 +129,7 @@ fun MainPage(
                     IconButton(
                         onClick = onFoodButtonClicked,
                         modifier = iconModifier
-                    ) {
+                        ) {
                         Image(
                             painter = painterResource(id = R.drawable.breakfast_image),
                             contentDescription = "breakfast",
@@ -194,7 +194,7 @@ fun MainPage(
                         removeFromFoodList = {rememberMeal.remove(food)},
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    Log.d("debug", "removed food")
+                Log.d("debug", "removed food")
                 }
             }
         }

@@ -17,6 +17,9 @@ Specifications for Client/Server communications for the FoodCompanion app.
 
     A. The received reply will begin with 'NW_CON' just as the transmitted message.
     B. After the aforementioned is a 32-character bytearray with the session token for the CLIENT.
+    C. After the session token is the RSA public key that is to be used for the next transmission.
+
+    OLD:
     C. After the session token is an RSA Public Key that is to be used for the next transmission.
         * The 'n' and 'e' values of the RSA key are separated by a non-numeric delimiter (the character '!')
 
