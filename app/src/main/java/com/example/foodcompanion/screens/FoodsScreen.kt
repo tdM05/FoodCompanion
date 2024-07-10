@@ -1,15 +1,12 @@
 package com.example.foodcompanion.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,24 +34,15 @@ enum class FoodTypes {
     Dinner,
     None
 }
-object FoodType {
-    var meal: String = FoodTypes.None.name
-    var filterStarches: Boolean = false
-    var filterVegetables: Boolean = false
-    var filterFruits: Boolean = false
-    var filterdessert: Boolean = false
-    var filterbeverages: Boolean = false
-    var filterCondiments: Boolean = false
-}
 
 @Composable
 fun FoodsPage(
-    onBackButtonClicked: () -> Unit = {},
+    onBackButtonClicked: (String) -> Unit = {},
 ) {
     Column {
         Spacer(modifier = Modifier.height(60.dp))
         Row() {
-            IconButton(onClick = onBackButtonClicked) {
+            IconButton(onClick = {onBackButtonClicked("test1234")}) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24dp_5f6368_fill0_wght400_grad0_opsz24),
                     contentDescription = "back arrow"
@@ -145,9 +133,7 @@ fun FoodsPage(
                     servingSize = "16g",
                     foodCategory = "Vegetables")
                 FoodWidget(
-                    myFood,
-                    {},
-                    {})
+                    myFood)
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
@@ -158,5 +144,5 @@ fun FoodsPage(
 @Preview(showBackground = true)
 @Composable
 fun FoodsPreview(){
-FoodsPage()
+    FoodsPage()
 }

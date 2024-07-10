@@ -1,6 +1,5 @@
 package com.example.foodcompanion
 
-import android.graphics.Paint.Align
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,17 +35,29 @@ class Food (
     val foodCategory: String){
 }
 
+//to add use global variable and when you go back , it will recompose
+//to delete, pass in a delete function to the widget so this function mutates the remember var.
+object FoodManager {
+    val myMeal: MutableList<Food> = mutableListOf<Food>()
+    var filterStarches: Boolean = false
+    var filterVegetables: Boolean = false
+    var filterFruits: Boolean = false
+    var filterdessert: Boolean = false
+    var filterbeverages: Boolean = false
+    var filterCondiments: Boolean = false
+}
+
 @Composable
-fun FoodWidget(food: Food,
-               addToFoodList: (Food) -> Unit,
-               removeFromFoodList: (Food) -> Unit,
-               modifier: Modifier = Modifier){
+fun FoodWidget(
+    food: Food,
+    removeFromFoodList: (() -> Unit)? = null,
+    modifier: Modifier = Modifier){
     Box (modifier = Modifier
         .height(80.dp)
         .padding(horizontal = 20.dp)
         .clip(shape = RoundedCornerShape(14.dp))
         .background(color = Color.hsv(0f, 0f, 0.93f))
-        ){
+    ){
         Row(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = food.foodImage,
@@ -63,13 +74,14 @@ fun FoodWidget(food: Food,
                 Text(text = "Serving size of:" + food.servingSize)
                 Text(text = food.foodCategory)
             }
-            if (addToFoodList == {}) {
-
-
+            if (removeFromFoodList != null) {
                 IconButton(
                     modifier = Modifier.align(Alignment.CenterVertically).fillMaxSize()
                         .wrapContentWidth(align = Alignment.End).padding(8.dp),
-                    onClick = { /*TODO*/ }
+                    onClick = {
+                        FoodManager.myMeal.remove(food)
+                        removeFromFoodList.invoke()
+                    }
                 ) {
                     Icon(
                         painter = painterResource(
@@ -84,8 +96,9 @@ fun FoodWidget(food: Food,
                     modifier = Modifier.align(Alignment.CenterVertically).fillMaxSize()
                         .wrapContentWidth(align = Alignment.End).padding(8.dp),
                     onClick = {
-                        addToFoodList(food)
-                        Log.d("debug", "adding to food list")
+                        FoodManager.myMeal.add(food)
+                        Log.d("debug", "myMeal has "+FoodManager.myMeal.size.toString()+ " items")
+
                     }
                 ) {
                     Icon(
@@ -110,5 +123,5 @@ fun Preview(){
     val myFood = Food(foodName = "Brocolli", foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
         servingSize = "16g",
         foodCategory = "Vegetables")
-    FoodWidget(myFood, {}, {})
+    FoodWidget(food = myFood)
 }
