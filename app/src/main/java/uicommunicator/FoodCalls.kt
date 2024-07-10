@@ -6,13 +6,6 @@ import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.R
 
-var filterStarches: Boolean = false
-var filterVegetables: Boolean = false
-var filterFruits: Boolean = false
-var filterdessert: Boolean = false
-var filterbeverages: Boolean = false
-var filterCondiments: Boolean = false
-
 
 fun getFoodObject(
     name: String,
@@ -24,7 +17,19 @@ fun getFoodObject(
     Returns a food object that can be used to import foods to the user through the function
     importFoodsToThisUser
     */
-    val imageID = R.drawable.broccoli_78ec54e
+    var imageID = 0
+    when (foodCategory) {
+        FoodTypes.Starches.name -> imageID = R.drawable.starches
+        FoodTypes.Vegetables.name -> imageID = R.drawable.broccoli_78ec54e
+        FoodTypes.Fruits.name -> imageID = R.drawable.fruits
+        FoodTypes.Dessert.name -> imageID = R.drawable.desert
+        FoodTypes.Beverages.name -> imageID = R.drawable.beverages
+        FoodTypes.Condiments.name -> imageID = R.drawable.condiments
+        else -> {
+            imageID = R.drawable.broccoli_78ec54e
+        }
+    }
+
     return Food(name, imageID, servingSize, foodCategory, foodDetails)
 }
 
@@ -69,7 +74,7 @@ fun sampleFoodsCall(){
     //make food 1 a breakfast meal
     val item1 = Pair(food1, FoodCategory.Breakfast.name)
     //make food 2 a lunch meal
-    val item2 = Pair(food1, FoodCategory.Lunch.name)
+    val item2 = Pair(food2, FoodCategory.Lunch.name)
     //Import statement
     importFoodsToThisUser(listOf(item1, item2))
 
