@@ -3,12 +3,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
-dependencies {
-    val nav_version = "2.7.7"
-
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-}
-
 android {
     namespace = "com.example.foodcompanion"
     compileSdk = 34
@@ -56,6 +50,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.code.gson:gson:2.8.2")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -72,5 +67,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("com.google.code.gson:gson:2.8.2")
 }
+

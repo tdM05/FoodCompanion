@@ -245,3 +245,145 @@ class TCP:
     # Of course, change the IP to your static IP.
 
     PORT = 12345
+
+from typing import Dict, List
+from enum import Enum
+from dataclasses import dataclass
+
+
+class Carbohydrates:
+    def __init__(self, starches, fiber, sugars):
+        self.starches = starches
+        self.fiber = fiber
+        self.sugars = sugars
+
+
+class Fats:
+    def __init__(self, trans, saturated):
+        self.trans = trans
+        self.saturated = saturated
+
+
+class Macro:
+    def __init__(self, carbohydrates, proteins, fats):
+        self.carbohydrates = carbohydrates
+        self.proteins = proteins
+        self.fats = fats
+
+
+@dataclass
+class Food:
+    id: str
+    name: str
+    calories: int
+    macros: Macro
+    diets: List[str]
+    diet_options: List[str]
+    serving_size: int = 1
+
+
+entrees = [
+    Food(id="1", name="Grilled Chicken", calories=250, macros=Macro(Carbohydrates(0.0, 0.0, 0.0), 30.0, Fats(0.0, 2.0)),
+         diets=["regular"], diet_options=["regular"]),
+    Food(id="2", name="Brown Rice", calories=150, macros=Macro(Carbohydrates(0.0, 2.0, 0.0), 3.0, Fats(0.0, 0.5)),
+         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
+]
+
+starches = [
+    Food(id="2", name="Brown Rice", calories=150, macros=Macro(Carbohydrates(0.0, 2.0, 0.0), 3.0, Fats(0.0, 0.5)),
+         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
+]
+
+vegetables = [
+    Food(id="3", name="Broccoli", calories=50, macros=Macro(Carbohydrates(0.0, 2.0, 2.0), 3.0, Fats(0.0, 0.5)),
+         diets=["regular", "diabetic", "low_cholesterol"], diet_options=["regular", "diabetic", "low_cholesterol", "low_sodium"])
+]
+
+fruits = [
+    Food(id="4", name="Apple", calories=80, macros=Macro(Carbohydrates(0.0, 4.0, 16.0), 1.0, Fats(0.0, 0.1)),
+         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
+]
+
+desserts = [
+    Food(id="5", name="Chocolate Cake", calories=300, macros=Macro(Carbohydrates(20.0, 2.0, 30.0), 5.0, Fats(2.0, 8.0)),
+         diets=["regular"], diet_options=["regular"])
+]
+
+beverages = [
+    Food(id="6", name="Orange Juice", calories=120, macros=Macro(Carbohydrates(0.0, 0.0, 30.0), 1.0, Fats(0.0, 0.0)),
+         diets=["regular", "diabetic"], diet_options=["regular", "diabetic", "low_sodium"])
+]
+
+condiments = [
+    Food(id="7", name="Ketchup", calories=20, macros=Macro(Carbohydrates(0.0, 0.0, 4.0), 0.1, Fats(0.0, 0.0)),
+         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
+]
+
+meal_options = {
+    "breakfast": {
+        "entrees": entrees,
+        "starches": starches,
+        "fruits": fruits,
+        "beverages": beverages
+    },
+    "lunch": {
+        "entrees": entrees,
+        "vegetables": vegetables,
+        "desserts": desserts,
+        "condiments": condiments
+    },
+    "dinner": {
+        "entrees": entrees,
+        "vegetables": vegetables,
+        "starches": starches,
+        "desserts": desserts,
+        "beverages": beverages
+    }
+}
+
+
+class DietOption(Enum):
+    REGULAR = "regular"
+    DIABETIC = "diabetic"
+    LOW_CHOLESTEROL = "low_cholesterol"
+    LOW_SODIUM = "low_sodium"
+
+
+def filter_meals_by_diet_option(meal_options: Dict[str, Dict[str, List[Food]]], diet_option: DietOption) -> Dict[str, List[Dict]]:
+    filtered_meals = {
+        "categories": []
+    }
+
+    diet_option_str = diet_option.value
+
+    for meal, categories in meal_options.items():
+        for category, foods in categories.items():
+            category_dict = {
+                "categoryName": category.capitalize(),
+                "foods": []
+            }
+            for food in foods:
+                if diet_option_str in food.diet_options:
+                    food_dict = {
+                        "id": food.id,
+                        "name": food.name,
+                        "calories": food.calories,
+                        "macros": {
+                            "carbohydrates": {
+                                "starches": food.macros.carbohydrates.starches,
+                                "sugars": food.macros.carbohydrates.sugars,
+                                "fiber": food.macros.carbohydrates.fiber
+                            },
+                            "proteins": food.macros.proteins,
+                            "fats": {
+                                "trans": food.macros.fats.trans,
+                                "saturated": food.macros.fats.saturated
+                            }
+                        },
+                        "servingSize": food.serving_size
+                    }
+                    category_dict["foods"].append(food_dict)
+            if category_dict["foods"]:
+                filtered_meals["categories"].append(category_dict)
+
+    return filtered_meals
