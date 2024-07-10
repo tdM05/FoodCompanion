@@ -18,24 +18,8 @@
               "trans": 0.0,
               "saturated": 2.0
             }
-          }
-        },
-        {
-          "id": "2",
-          "name": "Brown Rice",
-          "calories": 150,
-          "macros": {
-            "carbohydrates": {
-              "starches": 0.0,
-              "sugars": 0.0,
-              "fiber": 2.0
-            },
-            "proteins": 3.0,
-            "fats": {
-              "trans": 0.0,
-              "saturated": 0.5
-            }
-          }
+          },
+          "servingSize": 1
         }
       ]
     },
@@ -57,7 +41,8 @@
               "trans": 0.0,
               "saturated": 0.5
             }
-          }
+          },
+          "servingSize": 1
         }
       ]
     },
@@ -79,7 +64,100 @@
               "trans": 0.0,
               "saturated": 0.5
             }
-          }
+          },
+          "servingSize": 1
+        }
+      ]
+    },
+    {
+      "categoryName": "Fruits",
+      "foods": [
+        {
+          "id": "4",
+          "name": "Apple",
+          "calories": 80,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 16.0,
+              "fiber": 4.0
+            },
+            "proteins": 1.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.1
+            }
+          },
+          "servingSize": 1
+        }
+      ]
+    },
+    {
+      "categoryName": "Desserts",
+      "foods": [
+        {
+          "id": "5",
+          "name": "Chocolate Cake",
+          "calories": 300,
+          "macros": {
+            "carbohydrates": {
+              "starches": 20.0,
+              "sugars": 30.0,
+              "fiber": 2.0
+            },
+            "proteins": 5.0,
+            "fats": {
+              "trans": 2.0,
+              "saturated": 8.0
+            }
+          },
+          "servingSize": 1
+        }
+      ]
+    },
+    {
+      "categoryName": "Beverages",
+      "foods": [
+        {
+          "id": "6",
+          "name": "Orange Juice",
+          "calories": 120,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 30.0,
+              "fiber": 0.0
+            },
+            "proteins": 1.0,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.0
+            }
+          },
+          "servingSize": 1
+        }
+      ]
+    },
+    {
+      "categoryName": "Condiments",
+      "foods": [
+        {
+          "id": "7",
+          "name": "Ketchup",
+          "calories": 20,
+          "macros": {
+            "carbohydrates": {
+              "starches": 0.0,
+              "sugars": 4.0,
+              "fiber": 0.0
+            },
+            "proteins": 0.1,
+            "fats": {
+              "trans": 0.0,
+              "saturated": 0.0
+            }
+          },
+          "servingSize": 1
         }
       ]
     }
