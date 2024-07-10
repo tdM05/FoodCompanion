@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -21,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodcompanion.data.FoodCategory
 import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
@@ -45,7 +45,7 @@ object Notification {
 
 @Composable
 fun MainPage(
-    onFoodButtonClicked: () -> Unit = {},
+    onFoodButtonClicked: (String) -> Unit = {},
 ) {
     var mealStatus = false
     Column (
@@ -89,19 +89,19 @@ fun MainPage(
                 fontSize = 60.sp,
                 modifier = Modifier.padding(16.dp)
             )
-
-            val columnModifier = Modifier
-                .size(100.dp)
-                .weight(10f, fill = true)
-                .padding(1.dp)
             val iconModifier = Modifier
                 .size(1000.dp)
                 .align(Alignment.CenterHorizontally)
             Row (horizontalArrangement = Arrangement.Center){
-                Column (modifier = columnModifier){
+                Column (
+                    modifier = Modifier
+                    .size(100.dp)
+                    .weight(10f, fill = true)
+                    .padding(1.dp)
+                ){
                     Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = onFoodButtonClicked,
+                        onClick = {onFoodButtonClicked(FoodCategory.Breakfast.name)},
                         modifier = iconModifier
                     ) {
                         Image(
@@ -111,27 +111,34 @@ fun MainPage(
                         )
                     }
                 }
-                Column (modifier = columnModifier){
+                Column (modifier = Modifier
+                    .size(100.dp)
+                    .weight(10f, fill = true)
+                    .padding(1.dp)
+                    .height(50.dp)){
                     Text("Lunch", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = onFoodButtonClicked,
+                        onClick = {onFoodButtonClicked(FoodCategory.Lunch.name)},
                         modifier = iconModifier
                         ) {
                         Image(
-                            painter = painterResource(id = R.drawable.breakfast_image),
+                            painter = painterResource(id = R.drawable.lunch2),
                             contentDescription = "breakfast",
                             modifier = Modifier.fillMaxSize()
                         )
                     }
                 }
-                Column (modifier = columnModifier){
+                Column (modifier = Modifier
+                    .weight(10f, fill = true)
+                    .padding(1.dp)
+                    .width(20.dp).height(100.dp)){
                     Text("Dinner", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
-                        onClick = onFoodButtonClicked,
+                        onClick = {onFoodButtonClicked(FoodCategory.Dinner.name)},
                         modifier = iconModifier
                         ) {
                         Image(
-                            painter = painterResource(id = R.drawable.breakfast_image),
+                            painter = painterResource(id = R.drawable.dinner),
                             contentDescription = "breakfast",
                             modifier = Modifier.fillMaxSize()
                         )

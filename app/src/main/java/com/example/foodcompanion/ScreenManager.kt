@@ -2,16 +2,11 @@ package com.example.foodcompanion
 import com.example.foodcompanion.screens.*
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.foodcompanion.data.FoodCategory
 
-enum class Screens() {
-    Login,
-    Main,
-    Foods,
-}
 
 // All the screens are managed through this
 @Composable
@@ -29,13 +24,24 @@ fun Main (){
         composable(route = "Main") {
 
             MainPage(){
-                navController.navigate("Foods")
+                foodPageToGoTo: String -> navController.navigate(foodPageToGoTo)
             }
         }
-        composable(route = "Foods") {
-            FoodsPage(){
+        composable(route = FoodCategory.Breakfast.name) {
+            FoodsPage(FoodCategory.Breakfast.name){
                 navController.navigate("Main")
             }
         }
+        composable(route = FoodCategory.Lunch.name) {
+            FoodsPage(FoodCategory.Lunch.name){
+                navController.navigate("Main")
+            }
+        }
+        composable(route = FoodCategory.Dinner.name) {
+            FoodsPage(FoodCategory.Dinner.name){
+                navController.navigate("Main")
+            }
+        }
+
     }
 }
