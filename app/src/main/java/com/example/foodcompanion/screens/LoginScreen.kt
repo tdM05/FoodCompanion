@@ -2,12 +2,17 @@ package com.example.foodcompanion.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -61,19 +66,45 @@ fun LoginPage(
         Spacer(modifier = Modifier.height(spaceHeight))
 
         //date of birth
-        var birthday by remember { mutableStateOf("") }
-        TextField(
-            value = birthday,
-            onValueChange = { birthday = it },
-            label = { Text("Birthday (YYYY/MM/DD)") },
-            singleLine = true,
-            modifier = modifier,
-        )
+
+        Row (modifier = Modifier.width(301.dp)){
+            val birthdayMod = Modifier
+                .weight(1f)
+                .padding(10.dp)
+                .height(30.dp)
+            var year by remember { mutableStateOf("") }
+            TextField(
+                value = year,
+                onValueChange = { year = it },
+                label = { Text("(YYYY)") },
+                singleLine = true,
+                modifier = Modifier
+                    .weight(1.2f)
+                    .padding(10.dp)
+                    .height((30.dp)),
+            )
+            var month by remember { mutableStateOf("") }
+            TextField(
+                value = month,
+                onValueChange = { month = it },
+                label = { Text("(MM)") },
+                singleLine = true,
+                modifier = birthdayMod,
+            )
+            var day by remember { mutableStateOf("") }
+            TextField(
+                value = day,
+                onValueChange = { day = it },
+                label = { Text("(DD)") },
+                singleLine = true,
+                modifier = birthdayMod,
+            )
+        }
         Spacer(modifier = Modifier.height(spaceHeight))
 
         //This is the button
         Button(onClick = {
-            //verifyID(institutionID, patientID,  birthday, pageToNavigateTo)
+            //verifyID(institutionID, patientID, year+month+day, pageToNavigateTo)
             pageToNavigateTo()
         }) {
             Text("Log In")
