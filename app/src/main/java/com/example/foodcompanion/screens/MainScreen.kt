@@ -27,9 +27,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
 
@@ -188,12 +191,28 @@ fun MainPage(
                     .padding(80.dp))
             }
             else{
-                repeat(120){
-                    FoodWidget(
+                val myMeal = remember {
+                    mutableStateListOf<Food>()
+                }
+                val myFood =
+                    Food(
                         foodName = "Brocolli",
                         foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
                         servingSize = "16g",
-                        foodCategory = "Vegetables",)
+                        foodCategory = "Vegetables")
+
+                Button(onClick = { myMeal.add(myFood) }) {
+
+                }
+                Button(onClick = {myMeal.removeAll {it.foodName == "Brocolli" } }){
+
+                }
+                for (food in myMeal){
+                    FoodWidget(
+                        food = food,
+                        addToFoodList = {addFood: Food -> myMeal.add(addFood)},
+                        removeFromFoodList = {}
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }

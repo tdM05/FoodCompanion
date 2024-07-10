@@ -1,6 +1,7 @@
 package com.example.foodcompanion
 
 import android.graphics.Paint.Align
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,8 +29,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+class Food (
+    val foodName: String,
+    val foodImage: Painter,
+    val servingSize: String,
+    val foodCategory: String){
+}
+
 @Composable
-fun FoodWidget(foodName: String, foodImage: Painter, servingSize: String, foodCategory: String,
+fun FoodWidget(food: Food,
+               addToFoodList: (Food) -> Unit,
+               removeFromFoodList: (Food) -> Unit,
                modifier: Modifier = Modifier){
     Box (modifier = Modifier
         .height(80.dp)
@@ -39,8 +49,8 @@ fun FoodWidget(foodName: String, foodImage: Painter, servingSize: String, foodCa
         ){
         Row(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = foodImage,
-                contentDescription = foodName,
+                painter = food.foodImage,
+                contentDescription = food.foodName,
                 alignment = AbsoluteAlignment.CenterLeft,
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -49,20 +59,42 @@ fun FoodWidget(foodName: String, foodImage: Painter, servingSize: String, foodCa
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)){
-                Text(text = foodName)
-                Text(text = "Serving size of: $servingSize")
-                Text(text = foodCategory)
+                Text(text = food.foodName)
+                Text(text = "Serving size of:" + food.servingSize)
+                Text(text = food.foodCategory)
             }
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterVertically).fillMaxSize().wrapContentWidth(align = Alignment.End).padding(8.dp),
-                onClick = { /*TODO*/ }
-            ) {
-                Icon(
-                    painter = painterResource(
-                        id = R.drawable.delete_24dp_5f6368_fill0_wght400_grad0_opsz24
-                    ),
-                    contentDescription = "delete button"
-                )
+            if (addToFoodList == {}) {
+
+
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterVertically).fillMaxSize()
+                        .wrapContentWidth(align = Alignment.End).padding(8.dp),
+                    onClick = { /*TODO*/ }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.delete_24dp_5f6368_fill0_wght400_grad0_opsz24
+                        ),
+                        contentDescription = "delete button"
+                    )
+                }
+            }
+            else{
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterVertically).fillMaxSize()
+                        .wrapContentWidth(align = Alignment.End).padding(8.dp),
+                    onClick = {
+                        addToFoodList(food)
+                        Log.d("debug", "adding to food list")
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.add_circle_24dp_e8eaed_fill0_wght400_grad0_opsz24
+                        ),
+                        contentDescription = "add button"
+                    )
+                }
             }
 
         }
@@ -75,7 +107,8 @@ fun FoodWidget(foodName: String, foodImage: Painter, servingSize: String, foodCa
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
-    FoodWidget(foodName = "Brocolli", foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
+    val myFood = Food(foodName = "Brocolli", foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
         servingSize = "16g",
         foodCategory = "Vegetables")
+    FoodWidget(myFood, {}, {})
 }
