@@ -24,6 +24,7 @@ class FoodData {
         val id: String,
         val name: String,
         val calories: Int,
+        val servingSize: Double,  // Added servingSize
         val macros: Macro
     )
 
@@ -41,6 +42,7 @@ class FoodData {
             id = "1",
             name = "Grilled Chicken",
             calories = 250,
+            servingSize = 100.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 0.0, sugars = 0.0),
                 proteins = 30.0,
@@ -54,6 +56,7 @@ class FoodData {
             id = "2",
             name = "Brown Rice",
             calories = 150,
+            servingSize = 1.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 2.0, sugars = 0.0),
                 proteins = 3.0,
@@ -67,6 +70,7 @@ class FoodData {
             id = "3",
             name = "Broccoli",
             calories = 50,
+            servingSize = 1.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 2.0, sugars = 2.0),
                 proteins = 3.0,
@@ -80,6 +84,7 @@ class FoodData {
             id = "4",
             name = "Apple",
             calories = 80,
+            servingSize = 1.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 4.0, sugars = 16.0),
                 proteins = 1.0,
@@ -93,6 +98,7 @@ class FoodData {
             id = "5",
             name = "Chocolate Cake",
             calories = 300,
+            servingSize = 1.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 20.0, fiber = 2.0, sugars = 30.0),
                 proteins = 5.0,
@@ -106,6 +112,7 @@ class FoodData {
             id = "6",
             name = "Orange Juice",
             calories = 120,
+            servingSize = 1.0,
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 0.0, sugars = 30.0),
                 proteins = 1.0,
@@ -119,6 +126,7 @@ class FoodData {
             id = "7",
             name = "Ketchup",
             calories = 20,
+            servingSize = 1.0,  // Example serving size
             macros = Macro(
                 carbohydrates = Carbohydrates(starches = 0.0, fiber = 0.0, sugars = 4.0),
                 proteins = 0.1,
