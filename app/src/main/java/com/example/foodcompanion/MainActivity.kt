@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.res.painterResource
 import com.example.foodcompanion.*
 import com.example.foodcompanion.screens.MainPage
+import uicommunicator.sampleFoodsCall
 
 
 object UserInformation {
@@ -25,10 +26,9 @@ class MainActivity : ComponentActivity()  {
         // create a LoginCalls object to call stuff in the ui
         setContent {
             Main()
-            //MainPage()
+            sampleFoodsCall() //This is only for demonstration purposes. See FoodCalls in uicommunicator for details
         }
     }
-
 }
 
 

@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.foodcompanion.Food
+import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
 
@@ -128,14 +129,12 @@ fun FoodsPage(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Column(modifier = Modifier.verticalScroll(rememberScrollState())){
-            repeat(10){
-                val myFood = Food(foodName = "Brocolli", foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
-                    servingSize = "16g",
-                    foodCategory = "Vegetables")
-                FoodWidget(
-                    myFood)
-                Spacer(modifier = Modifier.height(4.dp))
+            for (food in FoodManager.foodOptions){
+                FoodWidget(food)
             }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
         }
     }
 }
