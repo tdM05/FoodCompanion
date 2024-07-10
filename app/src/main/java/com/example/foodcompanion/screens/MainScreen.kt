@@ -11,40 +11,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.foodcompanion.Food
+import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
 
@@ -61,6 +52,7 @@ fun MainPage(
 
     ){
         Spacer(modifier = Modifier.height(40.dp))
+
         // header
         Row {
             // profile
@@ -191,29 +183,18 @@ fun MainPage(
                     .padding(80.dp))
             }
             else{
-                val myMeal = remember {
-                    mutableStateListOf<Food>()
+                val rememberMeal = remember { mutableStateListOf<Food>() }
+                rememberMeal.clear()
+                for (food in FoodManager.myMeal){
+                    rememberMeal.add(food)
                 }
-                val myFood =
-                    Food(
-                        foodName = "Brocolli",
-                        foodImage = painterResource(id = R.drawable.broccoli_78ec54e),
-                        servingSize = "16g",
-                        foodCategory = "Vegetables")
-
-                Button(onClick = { myMeal.add(myFood) }) {
-
-                }
-                Button(onClick = {myMeal.removeAll {it.foodName == "Brocolli" } }){
-
-                }
-                for (food in myMeal){
+                for (food in rememberMeal){
                     FoodWidget(
                         food = food,
-                        addToFoodList = {addFood: Food -> myMeal.add(addFood)},
-                        removeFromFoodList = {}
+                        removeFromFoodList = {rememberMeal.remove(food)},
                     )
                     Spacer(modifier = Modifier.height(4.dp))
+                Log.d("debug", "removed food")
                 }
             }
         }

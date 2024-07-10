@@ -19,20 +19,24 @@ fun Main (){
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Screens.Login.name
+        startDestination = "Login"
     ) {
-        composable(route = Screens.Login.name) {
+        composable(route = "Login") {
             LoginPage(
-                pageToNavigateTo = {navController.navigate(Screens.Main.name)}
+                pageToNavigateTo = {navController.navigate("Main/None")}
             )
         }
-        composable(route = Screens.Main.name) {
+        composable(route = "Main/{id}") {
+            val data = it.arguments?.getString("id") ?: "None"
+
             MainPage(){
-                navController.navigate(Screens.Foods.name)
+                navController.navigate("Foods")
             }
         }
-        composable(route = Screens.Foods.name) {
-            FoodsPage(){navController.navigate(Screens.Main.name)}
+        composable(route = "Foods") {
+            FoodsPage(){
+                navController.navigate("Main/message")
+            }
         }
     }
 }
