@@ -47,6 +47,7 @@ class Food (
 //to delete, pass in a delete function to the widget so this function mutates the remember var.
 object FoodManager {
     val myMeal: MutableList<Food> = mutableListOf<Food>()
+    // the second part (the string) refers to breakfast, lunch, and dinner
     val foodOptions: MutableList<Pair<Food, String>> = mutableListOf()
     var filterStarches: Boolean = false
     var filterVegetables: Boolean = false

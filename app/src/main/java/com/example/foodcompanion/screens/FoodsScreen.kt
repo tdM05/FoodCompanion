@@ -29,6 +29,7 @@ import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
 import com.example.foodcompanion.data.FoodCategory
+import com.example.foodcompanion.data.FoodTypes
 
 
 @Composable
@@ -36,6 +37,12 @@ fun FoodsPage(
     foodType: String,
     onBackButtonClicked: (String) -> Unit = {}
 ) {
+    var checkedStarch by remember { mutableStateOf(true) }
+    var checkedVegetables by remember { mutableStateOf(true) }
+    var checkedFruit by remember { mutableStateOf(true) }
+    var checkedDessert by remember { mutableStateOf(true) }
+    var checkedBeverages by remember { mutableStateOf(true) }
+    var checkedCondiments by remember { mutableStateOf(true) }
     Log.d("screens", foodType)
     Column {
         Spacer(modifier = Modifier.height(60.dp))
@@ -49,13 +56,6 @@ fun FoodsPage(
             Spacer(modifier = Modifier.width(20.dp))
             // filters
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()){
-                var checkedStarch by remember { mutableStateOf(false) }
-                var checkedVegetables by remember { mutableStateOf(false) }
-                var checkedFruit by remember { mutableStateOf(false) }
-                var checkedDessert by remember { mutableStateOf(false) }
-                var checkedBeverages by remember { mutableStateOf(false) }
-                var checkedCondiments by remember { mutableStateOf(false) }
-
                 Row (){
                     val modifier = Modifier
                     val colModifier = Modifier.weight(1f)
@@ -128,7 +128,16 @@ fun FoodsPage(
         Column(modifier = Modifier.verticalScroll(rememberScrollState())){
             for (food in FoodManager.foodOptions){
                 if (food.second == foodType){
-                    FoodWidget(food.first)
+                    if(
+                        food.first.foodCategory == FoodTypes.Starches.name && checkedStarch ||
+                        food.first.foodCategory == FoodTypes.Vegetables.name && checkedVegetables ||
+                        food.first.foodCategory == FoodTypes.Fruits.name && checkedFruit ||
+                        food.first.foodCategory == FoodTypes.Dessert.name && checkedDessert ||
+                        food.first.foodCategory == FoodTypes.Beverages.name && checkedBeverages ||
+                        food.first.foodCategory == FoodTypes.Condiments.name && checkedCondiments
+                        ){
+                        FoodWidget(food.first)
+                    }
                 }
             }
 
