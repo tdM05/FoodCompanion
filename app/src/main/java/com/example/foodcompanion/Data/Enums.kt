@@ -12,7 +12,8 @@ enum class FoodTypes{
     Fruits,
     Dessert,
     Beverages,
-    Condiments
+    Condiments,
+    Entrees,
 
 }
 

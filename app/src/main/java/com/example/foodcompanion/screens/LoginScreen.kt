@@ -1,5 +1,6 @@
 package com.example.foodcompanion.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,11 +77,23 @@ fun LoginPage
         Spacer(modifier = Modifier.height(spaceHeight))
 
         //This is the button
-        Button(onClick = { verifyID(institutionID, patientID, birthday, pageToNavigateTo) }) {
+        val context = LocalContext.current
+        Button(onClick = {
+            if (verifyID(institutionID, patientID, birthday, pageToNavigateTo) ){
+                pageToNavigateTo()
+            }
+            else{
+                Toast.makeText(
+                    context,
+                    "Log in failed",
+                    Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+            ){
             Text("Log In")
         }
-    }
-}
+}}
 
 @Preview(showBackground = true)
 @Composable

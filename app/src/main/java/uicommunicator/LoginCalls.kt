@@ -133,11 +133,8 @@ fun verifyID(
     *   Wait for the response and decode it.
     *  */
 
-    val encrypted_message: String = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+    //val encrypted_message: String = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
     val sha256: String? = null
-
-    // Go to the main page
-    pageToNavigateTo()
 
     return true
 }
