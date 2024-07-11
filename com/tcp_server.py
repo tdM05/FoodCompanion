@@ -312,7 +312,7 @@ class Server:
         _msg = __rcv[_std_hdr_len + sc_data.SHA3_256_HASH_SIZE::]
 
         rx = sc_data.Transmission(_hdr, _chk, _msg)
-        comp_hash = hashlib.sha3_256(rx.message).hexdigest()
+        comp_hash = hashlib.sha256(rx.message).hexdigest()
 
         assert rx.msg_hash == comp_hash, f'E({rx.msg_hash}) | R({comp_hash})'
         __prk = Server.__sessions[rx.header.H_SES_TOK][-1]
@@ -323,7 +323,7 @@ class Server:
         pt_diet = sc_db.lookup_patient_diet(__inst_id, int(__p_dob), int(__p_uid))
 
         def _reply_to(__conn: socket.socket, __message: bytes, __ses_tok: str) -> None:
-            _o_chk = hashlib.sha3_256(__message).hexdigest().encode()
+            _o_chk = hashlib.sha256(__message).hexdigest().encode()
             _o_hdr = sc_data.HeaderUtils.create_bytes(__message, __ses_tok, True)
 
             __conn.send(_o_hdr + _o_chk + __message)
