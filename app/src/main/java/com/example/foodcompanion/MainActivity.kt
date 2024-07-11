@@ -1,6 +1,8 @@
 package com.example.foodcompanion
 
 
+
+
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +11,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.res.painterResource
 import com.example.foodcompanion.*
 import com.example.foodcompanion.screens.MainPage
-import uicommunicator.sampleFoodsCall
+import uicommunicator.FoodsCall
+
+
 
 
 object UserInformation {
@@ -19,6 +23,8 @@ object UserInformation {
 }
 
 
+
+
 class MainActivity : ComponentActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,10 +32,7 @@ class MainActivity : ComponentActivity()  {
         // create a LoginCalls object to call stuff in the ui
         setContent {
             Main()
-            sampleFoodsCall() //This is only for demonstration purposes. See FoodCalls in uicommunicator for details
+            FoodsCall() //This is only for demonstration purposes. See FoodCalls in uicommunicator for details
         }
     }
 }
-
-
-
