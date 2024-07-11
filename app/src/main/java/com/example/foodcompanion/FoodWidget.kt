@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -77,6 +78,7 @@ fun FoodWidget(
                 painter = painterResource(id = food.foodImageID),
                 contentDescription = food.foodName,
                 alignment = AbsoluteAlignment.CenterLeft,
+                modifier = Modifier.aspectRatio(2f)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Column (
@@ -147,7 +149,7 @@ fun FoodWidget(
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
-    val myFood = Food(foodName = "Brocolli", foodImageID = R.drawable.broccoli_78ec54e,
+    val myFood = Food(foodName = "Brocolli", foodImageID = R.drawable.desert,
         servingSize = "16g",
         foodCategory = "Vegetables")
     FoodWidget(food = myFood)

@@ -137,12 +137,10 @@ fun FoodsPage(
                         food.first.foodCategory == FoodTypes.Condiments.name && checkedCondiments
                         ){
                         FoodWidget(food.first)
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
         }
     }
 }
