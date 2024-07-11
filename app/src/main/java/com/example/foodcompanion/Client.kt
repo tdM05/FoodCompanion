@@ -30,7 +30,7 @@ class Client : Runnable {
     val tcpInfo: TCPInfo get() = TCPInfo(connected, pubKey, sessionToken, appVersion)
 
     private fun connectToServer() : Boolean {
-        val ip   = "192.168.56.1"
+        val ip   = "10.0.2.2"//"192.168.56.1"
         val port = 12345
         val client = Socket(ip, port)
 
