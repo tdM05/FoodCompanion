@@ -3,8 +3,9 @@ package com.example.foodcompanion
 import android.util.Log
 import java.net.Socket
 
+val appVersion: Long        = 20240708122100
 
-data class TCPInfo 
+data class TCPInfo
 (
     var connected: Boolean              = false,
     var pubKey: String?                 = null,
@@ -21,7 +22,7 @@ class Client : Runnable {
     private var connected: Boolean      = false
     private var pubKey: String?         = null
     private var sessionToken: String?   = null
-    private var appVersion: Long        = 20240708122100
+    private val appVersion: Long        = 20240708122100
 
     private val isConnected: Boolean get() = connected
     private val getAppVersion: Long get() = appVersion

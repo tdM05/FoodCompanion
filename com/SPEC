@@ -34,7 +34,7 @@ For the next communications, a HEADER must be used (see HEADER FORMAT at the end
 
     Format:
     A. The first section of the message must be a header compliant with the HEADER FORMAT.
-    B. Next, a 64-character, hexadecimal hash (SHA3, 256-bit) must be included.
+    B. Next, a 64-character, hexadecimal hash (SHA, 256-bit) must be included.
         * This hash is that of the ENCRYPTED message.
     C. Finally, the message. Since this transmission contains sensitive patient information, it must be
        encrypted with the RSA public key received earlier.
