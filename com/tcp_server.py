@@ -15,12 +15,14 @@ The FoodCompanion app was contributed to by (GitHub usernames sorted alphabetica
     https://github.com/wesyuxd
 
 """
+import traceback
 
 import select, sys, hashlib, rsa, socket, re, random, json
+from cliHelper import CLI
 from time import sleep
 from datetime import datetime
 from threading import Thread, Event, Timer
-from typing import cast, Type, Any, Dict, Tuple
+from typing import cast, Type, Any, Dict, Tuple, List
 
 
 try:
@@ -90,7 +92,7 @@ class Server:
     def request_exit(self) -> None:
         global _SERVER_THREAD
 
-        sys.stdout.write("Submitting an exit request now...\n")
+        stdout("Submitting an exit request now...\n")
 
         Server.__is_alive = False
         _SERVER_THREAD.done()
@@ -181,20 +183,20 @@ class Server:
                     self.__threads[_c_name].start()
 
         else:
-            sys.stdout.write('Server exiting main loop.\n')
+            stdout('Server exiting main loop.\n')
 
         self._shutdown()
 
     def _handle_client(self, __c_name: str) -> None:
-        sys.stdout.write(f'[{__c_name}] Replying.\n')
+        stdout(f'[{__c_name}] Replying.\n')
 
         _conn, *_ = self.__connections[__c_name]
         _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
 
-        print(_rcv)
+        stdout(f'{_rcv}\n')
 
         if not _rcv:
-            sys.stderr.write(f'[{__c_name}] Connection closed.\n')
+            stderr(f'[{__c_name}] Connection closed.\n')
             self._remove(__c_name)
 
             return
@@ -205,7 +207,7 @@ class Server:
                 _conn.close()
 
             except AssertionError as _AE:
-                sys.stderr.write(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE)}\n')
+                stderr(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE)}\n')
                 _conn.send(str(_AE).encode())
                 self._remove(__c_name)
 
@@ -217,7 +219,7 @@ class Server:
                 _conn.close()
 
             except AssertionError as _AE:
-                sys.stderr.write(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE)}\n')
+                stderr(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE)}\n')
                 _conn.send(str(_AE).encode())
                 self._remove(__c_name)
 
@@ -250,7 +252,7 @@ class Server:
 
             _conn.close()
 
-        sys.stdout.write(f'[{__c_name}] Done.\n\n')
+        stdout(f'[{__c_name}] Done.\n\n')
 
         self.__threads[__c_name].done()
         self._remove(__c_name)
@@ -274,14 +276,14 @@ class Server:
         self.__connections[__c_name] = (_conn, _addr, __pb, __pr)
         self.__sessions[_ses_tok] = (__pb, __pr)
 
-        sys.stdout.write(f'[{__c_name}] New session {_ses_tok}\n')
+        stdout(f'[{__c_name}] New session {_ses_tok}\n')
 
         dout =  sc_data.NEW_CONN_CODE
         dout += _ses_tok.encode()
         # dout += str(__pb.n).encode() + sc_data.RSA_N_E_DELIM + str(__pb.e).encode()
         dout += __pb.save_pkcs1('PEM')
 
-        sys.stdout.write(f'[{__c_name}] {dout=}\n')
+        stdout(f'[{__c_name}] {dout=}\n')
         _conn.send(dout)
 
     def _old_client(self, __rcv: bytes, __c_name: str) -> None:
@@ -320,6 +322,10 @@ class Server:
         __msg_dec = rsa.decrypt(rx.message, __prk)
         __inst_id, __p_dob, __p_uid = __msg_dec.split(sc_data.MESSAGE_DELIM)
 
+        __inst_id = __inst_id.decode().strip().upper()
+        __p_dob = __p_dob.decode().strip()
+        __p_uid = __p_uid.decode().strip()
+
         pt_diet = sc_db.lookup_patient_diet(__inst_id, int(__p_dob), int(__p_uid))
 
         def _reply_to(__conn: socket.socket, __message: bytes, __ses_tok: str) -> None:
@@ -329,7 +335,7 @@ class Server:
             __conn.send(_o_hdr + _o_chk + __message)
 
         if pt_diet is None:
-            sys.stderr.write(f'[{__c_name}] Patient not found.\n')
+            stderr(f'[{__c_name}] Patient not found.\n')
 
             # Send back the patient not found error code.
             _reply_to(_conn, sc_data.CD_PATIENT_NOT_FOUND.encode(), rx.header.H_SES_TOK)
@@ -338,7 +344,7 @@ class Server:
 
         # Send meal options
         _reply_to(_conn, json.dumps(sc_db.get_meal_options(pt_diet)).encode(), rx.header.H_SES_TOK)
-        sys.stdout.write(f"[{__c_name}] Sent out {pt_diet.name} meal options.\n")
+        stdout(f"[{__c_name}] Sent out {pt_diet.name} meal options.\n")
 
         return
 
@@ -400,7 +406,7 @@ def _excepthook(exc_type: Type[BaseException], value: Any, traceback: Any) -> No
     global __server
 
     if exc_type in (KeyboardInterrupt, ):
-        sys.stderr.write('KB_INT\n')
+        stderr('KB_INT\n')
 
     else:
         __server.request_exit()
@@ -409,17 +415,51 @@ def _excepthook(exc_type: Type[BaseException], value: Any, traceback: Any) -> No
     sc_quit()
 
 
+_stdout_bk: List[str] = []
+_enable_logging: bool = True
+
+
+def stderr(data: str) -> int:
+    global _enable_logging
+
+    if not _enable_logging:
+        stdout(f'[ERROR] {data}')
+        return 0
+
+    else:
+        return sys.stderr.write(data)
+
+
+def stdout(data: str) -> int:
+    global _enable_logging, _stdout_bk
+
+    if _enable_logging:
+        return sys.stdout.write(data)
+
+    else:
+        _stdout_bk.append(data)
+
+    return 0
+
+
+def pause_stdout() -> None:
+    global _enable_logging
+    _enable_logging = False
+
+
+def resume_stdout() -> None:
+    global _stdout_bk, _enable_logging
+
+    for s in [*_stdout_bk]:  # To prevent the case in which the size of __STDOUT_BK is changed during iteration.
+        sys.stdout.write(f'[PAST MESSAGE] {s}')
+
+    _enable_logging = True
+
+
 def _start() -> None:
     global _SERVER_THREAD, __server
 
-    sys.stdout.writelines([
-        "-----------------------------------------------\r\n",
-        "                                               \r\n",
-        "       MediHacks 2024 | FoodCompanion App      \r\n",
-        f" Hosting server at {sc_data.TCP.IP} (PORT {sc_data.TCP.PORT}) \r\n",
-        "                                               \r\n",
-        "-----------------------------------------------\r\n"
-    ])
+    CLI.help_doc()
 
     # Start the server on a new thread
     __server = Server(sc_data.TCP.IP, sc_data.TCP.PORT)
@@ -427,15 +467,50 @@ def _start() -> None:
     _SERVER_THREAD.start()
 
     while True:
-        sys.stdout.write('Stuck? Press CTRL+C to exit at any time.\n')
-        comm = input('Enter a command at any time, then press ENTER/RETURN.\n').strip().upper()
+        stdout('*** Stuck? Press CTRL+C to exit at any time.\n*** Use the command "HELP" to get a list of commands.\n\n')
 
-        match comm:
-            case 'EXIT':
-                sc_quit()
+        try:
+            comm = input('Enter a command at any time, then press ENTER/RETURN.\n').strip().upper()
 
-            case _:
-                sys.stderr.write(f'Invalid command "{comm}".\n')
+            match comm:
+                case 'STOP':
+                    sc_quit()
+
+                case 'NEW':
+                    pause_stdout()
+                    CLI.add_patient()
+                    resume_stdout()
+
+                case 'UPDATE':
+                    pause_stdout()
+                    CLI.update_patient()
+                    resume_stdout()
+
+                case 'REMOVE':
+                    pause_stdout()
+                    CLI.remove_patient()
+                    resume_stdout()
+
+                case 'LIST':
+                    pause_stdout()
+                    CLI.list_patients()
+                    resume_stdout()
+
+                case 'HELP':
+                    pause_stdout()
+                    CLI.help_doc()
+                    resume_stdout()
+
+                case _:
+                    stderr(f"Invalid command \"{comm}\"\n")
+
+                    pause_stdout()
+                    CLI.help_doc()
+                    resume_stdout()
+
+        except Exception:
+            resume_stdout()
+            stderr(traceback.format_exc() + '\n')
 
 
 if __name__ == "__main__":

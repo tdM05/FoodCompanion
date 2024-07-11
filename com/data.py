@@ -223,7 +223,7 @@ class MealOption(Enum):
         REGULAR,
         DIABETIC,
         LOW_CHOLESTEROL,
-        LOW_SODIUM
+        LOW_SODIUM,
     ) = range(4)
 
 
@@ -342,14 +342,7 @@ meal_options = {
 }
 
 
-class DietOption(Enum):
-    REGULAR = "regular"
-    DIABETIC = "diabetic"
-    LOW_CHOLESTEROL = "low_cholesterol"
-    LOW_SODIUM = "low_sodium"
-
-
-def filter_meals_by_diet_option(meal_options: Dict[str, Dict[str, List[Food]]], diet_option: DietOption) -> Dict[str, List[Dict]]:
+def filter_meals_by_diet_option(meal_options: Dict[str, Dict[str, List[Food]]], diet_option: MealOption) -> Dict[str, List[Dict]]:
     filtered_meals = {
         "categories": []
     }
