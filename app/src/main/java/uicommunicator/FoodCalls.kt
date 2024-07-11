@@ -28,6 +28,7 @@ fun getFoodObject(
         FoodTypes.Dessert.name -> imageID = R.drawable.desert
         FoodTypes.Beverages.name -> imageID = R.drawable.beverages
         FoodTypes.Condiments.name -> imageID = R.drawable.condiments
+        FoodTypes.Entrees.name -> imageID = R.drawable.entrees
         else -> {
             imageID = R.drawable.broccoli_78ec54e
         }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
@@ -43,6 +44,7 @@ fun FoodsPage(
     var checkedDessert by remember { mutableStateOf(true) }
     var checkedBeverages by remember { mutableStateOf(true) }
     var checkedCondiments by remember { mutableStateOf(true) }
+    var checkedEntrees by remember { mutableStateOf(true) }
     Log.d("screens", foodType)
     Column {
         Spacer(modifier = Modifier.height(60.dp))
@@ -120,6 +122,15 @@ fun FoodsPage(
                             checked = checkedCondiments,
                             onCheckedChange = {checkedCondiments = it},
                             modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+//                        //Entrees
+                        Text(
+                            "Entrees",
+                            modifier = modifier
+                        )
+                        Checkbox(
+                            checked = checkedEntrees,
+                            onCheckedChange = {checkedEntrees = it},
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
                     }
                 }
             }
@@ -134,7 +145,8 @@ fun FoodsPage(
                         food.first.foodCategory == FoodTypes.Fruits.name && checkedFruit ||
                         food.first.foodCategory == FoodTypes.Dessert.name && checkedDessert ||
                         food.first.foodCategory == FoodTypes.Beverages.name && checkedBeverages ||
-                        food.first.foodCategory == FoodTypes.Condiments.name && checkedCondiments
+                        food.first.foodCategory == FoodTypes.Condiments.name && checkedCondiments ||
+                        food.first.foodCategory == FoodTypes.Entrees.name && checkedEntrees
                         ){
                         FoodWidget(food.first)
                         Spacer(modifier = Modifier.height(4.dp))
