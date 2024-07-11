@@ -122,7 +122,7 @@ fun FoodsPage(
                             checked = checkedCondiments,
                             onCheckedChange = {checkedCondiments = it},
                             modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
-//                        //Entrees
+                        //Entrees
                         Text(
                             "Entrees",
                             modifier = modifier

@@ -38,6 +38,7 @@ import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
+import uicommunicator.updateMealStatus
 
 object Notification {
     var message: MutableList<String> = mutableListOf("test1", "test2asdfasdfasdfsadfasdfasdfasdfasdfasdf")
@@ -47,7 +48,6 @@ object Notification {
 fun MainPage(
     onFoodButtonClicked: (String) -> Unit = {},
 ) {
-    var mealStatus = false
     Column (
 
     ){
@@ -95,9 +95,9 @@ fun MainPage(
             Row (horizontalArrangement = Arrangement.Center){
                 Column (
                     modifier = Modifier
-                    .size(100.dp)
-                    .weight(10f, fill = true)
-                    .padding(1.dp)
+                        .size(100.dp)
+                        .weight(10f, fill = true)
+                        .padding(1.dp)
                 ){
                     Text("Breakfast", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
@@ -131,7 +131,8 @@ fun MainPage(
                 Column (modifier = Modifier
                     .weight(10f, fill = true)
                     .padding(1.dp)
-                    .width(20.dp).height(100.dp)){
+                    .width(20.dp)
+                    .height(100.dp)){
                     Text("Dinner", modifier = Modifier.align(Alignment.CenterHorizontally))
                     IconButton(
                         onClick = {onFoodButtonClicked(FoodCategory.Dinner.name)},
@@ -150,16 +151,32 @@ fun MainPage(
         //My meal
         val myMealFont = 60.sp
         val statusFont = 12.sp
+        val rememberMeal = remember { mutableStateListOf<Food>() }
+        rememberMeal.clear()
+        for (food in FoodManager.myMeal) {
+            rememberMeal.add(food)
+        }
+        var mealReady by remember {
+            mutableStateOf(true)
+        }
+        updateMealStatus { mealStatus: Boolean -> mealReady = mealStatus }
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
-        ){
-            Row (verticalAlignment = Alignment.CenterVertically){
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = "My Meal", fontSize = myMealFont, modifier = Modifier.padding(16.dp))
-                if (mealStatus == true) {
-                    IconButton(onClick = { /*TODO*/ },
+                if (mealReady) {
+                    Text(
+                        text = "(ready!)",
+                        fontSize = statusFont,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    IconButton(
+                        onClick = { /*TODO*/ },
                         Modifier
                             .size(50.dp)
-                            .padding(8.dp)) {
+                            .weight(1f)
+                    ) {
                         Icon(
                             painter = painterResource(
                                 id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
@@ -167,13 +184,18 @@ fun MainPage(
                             contentDescription = null
                         )
                     }
-                }
-                else{
-                    Text(text = "(not ready)", fontSize = statusFont, modifier = Modifier.padding(16.dp))
-                    IconButton(onClick = { /*TODO*/ },
+                } else {
+                    Text(
+                        text = "(not ready)",
+                        fontSize = statusFont,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    IconButton(
+                        onClick = { /*TODO*/ },
                         Modifier
                             .size(50.dp)
-                            .padding(8.dp)) {
+                            .weight(1f)
+                    ) {
                         Icon(
                             painter = painterResource(
                                 id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
@@ -183,26 +205,23 @@ fun MainPage(
                     }
                 }
             }
-            if (mealStatus == true){
-                Text(text = "Nothing Here", fontSize = 16.sp, modifier = Modifier
-                    .alpha(0.4f)
-                    .align(Alignment.CenterHorizontally)
-                    .padding(80.dp))
-            }
-            else{
-                val rememberMeal = remember { mutableStateListOf<Food>() }
-                rememberMeal.clear()
-                for (food in FoodManager.myMeal){
-                    rememberMeal.add(food)
-                }
-                for (food in rememberMeal){
+            if (!rememberMeal.isEmpty()) {
+                for (food in rememberMeal) {
                     FoodWidget(
                         food = food,
-                        removeFromFoodList = {rememberMeal.remove(food)},
+                        removeFromFoodList = { rememberMeal.remove(food) },
+                        updateMealReady = {status: Boolean -> mealReady = status}
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                Log.d("debug", "removed food")
+                    Log.d("debug", "removed food")
                 }
+            } else {
+                Text(
+                    text = "Nothing Here", fontSize = 16.sp, modifier = Modifier
+                        .alpha(0.4f)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(80.dp)
+                )
             }
         }
     }

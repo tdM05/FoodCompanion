@@ -1,6 +1,7 @@
 package com.example.foodcompanion
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,9 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import uicommunicator.canAddThisFood
+import uicommunicator.updateMealStatus
 
 class Food (
     val foodName: String,
@@ -62,6 +66,7 @@ object FoodManager {
 fun FoodWidget(
     food: Food,
     removeFromFoodList: (() -> Unit)? = null,
+    updateMealReady: ((Boolean) -> Unit)? = null,
     modifier: Modifier = Modifier){
     var detailsEnabled by remember {
         mutableStateOf(false)
@@ -100,6 +105,9 @@ fun FoodWidget(
                     onClick = {
                         FoodManager.myMeal.remove(food)
                         removeFromFoodList.invoke()
+                        if (updateMealReady != null) {
+                            updateMealStatus(updateMealReady)
+                        }
                     }
                 ) {
                     Icon(
@@ -111,6 +119,7 @@ fun FoodWidget(
                 }
             }
             else{
+                val context = LocalContext.current
                 IconButton(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
@@ -118,9 +127,18 @@ fun FoodWidget(
                         .wrapContentWidth(align = Alignment.End)
                         .padding(8.dp),
                     onClick = {
-                        FoodManager.myMeal.add(food)
-                        Log.d("debug", "myMeal has "+FoodManager.myMeal.size.toString()+ " items")
-
+                        val canAddThisFood = canAddThisFood(food)
+                        if (canAddThisFood.first) {
+                            FoodManager.myMeal.add(food)
+                            Log.d("debug", "myMeal has "+FoodManager.myMeal.size.toString()+ " items")
+                        }
+                        else {
+                            Toast.makeText(
+                                context,
+                                canAddThisFood.second,
+                                Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                 ) {
                     Icon(
@@ -149,7 +167,7 @@ fun FoodWidget(
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
-    val myFood = Food(foodName = "Brocolli", foodImageID = R.drawable.desert,
+    val myFood = Food(foodName = "Ice cream", foodImageID = R.drawable.desert,
         servingSize = "16g",
         foodCategory = "Vegetables")
     FoodWidget(food = myFood)
