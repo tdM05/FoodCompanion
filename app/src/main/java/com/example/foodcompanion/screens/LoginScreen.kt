@@ -75,7 +75,11 @@ fun LoginPage
         Spacer(modifier = Modifier.height(spaceHeight))
 
         //This is the button
-        Button(onClick = { verifyID(institutionID, patientID, birthday, pageToNavigateTo) }) {
+        Button(onClick = {
+            if (verifyID(institutionID, patientID, birthday, pageToNavigateTo) ){
+                pageToNavigateTo()
+            }
+        }) {
             Text("Log In")
         }
     }
