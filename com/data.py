@@ -2,7 +2,7 @@ import socket
 from enum import Enum
 from dataclasses import dataclass
 from datetime import datetime
-from typing import cast, List, Union
+from typing import cast, List, Union, Dict
 
 # ------------------ CONSTANTS ------------------
 
@@ -246,9 +246,8 @@ class TCP:
 
     PORT = 12345
 
-from typing import Dict, List
-from enum import Enum
-from dataclasses import dataclass
+
+# Food Management
 
 
 class Carbohydrates:
@@ -282,67 +281,10 @@ class Food:
     serving_size: int = 1
 
 
-entrees = [
-    Food(id="1", name="Grilled Chicken", calories=250, macros=Macro(Carbohydrates(0.0, 0.0, 0.0), 30.0, Fats(0.0, 2.0)),
-         diets=["regular"], diet_options=["regular"]),
-    Food(id="2", name="Brown Rice", calories=150, macros=Macro(Carbohydrates(0.0, 2.0, 0.0), 3.0, Fats(0.0, 0.5)),
-         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
-]
-
-starches = [
-    Food(id="2", name="Brown Rice", calories=150, macros=Macro(Carbohydrates(0.0, 2.0, 0.0), 3.0, Fats(0.0, 0.5)),
-         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
-]
-
-vegetables = [
-    Food(id="3", name="Broccoli", calories=50, macros=Macro(Carbohydrates(0.0, 2.0, 2.0), 3.0, Fats(0.0, 0.5)),
-         diets=["regular", "diabetic", "low_cholesterol"], diet_options=["regular", "diabetic", "low_cholesterol", "low_sodium"])
-]
-
-fruits = [
-    Food(id="4", name="Apple", calories=80, macros=Macro(Carbohydrates(0.0, 4.0, 16.0), 1.0, Fats(0.0, 0.1)),
-         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
-]
-
-desserts = [
-    Food(id="5", name="Chocolate Cake", calories=300, macros=Macro(Carbohydrates(20.0, 2.0, 30.0), 5.0, Fats(2.0, 8.0)),
-         diets=["regular"], diet_options=["regular"])
-]
-
-beverages = [
-    Food(id="6", name="Orange Juice", calories=120, macros=Macro(Carbohydrates(0.0, 0.0, 30.0), 1.0, Fats(0.0, 0.0)),
-         diets=["regular", "diabetic"], diet_options=["regular", "diabetic", "low_sodium"])
-]
-
-condiments = [
-    Food(id="7", name="Ketchup", calories=20, macros=Macro(Carbohydrates(0.0, 0.0, 4.0), 0.1, Fats(0.0, 0.0)),
-         diets=["regular", "diabetic"], diet_options=["regular", "diabetic"])
-]
-
-meal_options = {
-    "breakfast": {
-        "entrees": entrees,
-        "starches": starches,
-        "fruits": fruits,
-        "beverages": beverages
-    },
-    "lunch": {
-        "entrees": entrees,
-        "vegetables": vegetables,
-        "desserts": desserts,
-        "condiments": condiments
-    },
-    "dinner": {
-        "entrees": entrees,
-        "vegetables": vegetables,
-        "starches": starches,
-        "desserts": desserts,
-        "beverages": beverages
-    }
-}
-
-
-def filter_meals_by_diet_option(meal_options: Dict[str, Dict[str, List[Food]]], diet_option: MealOption) -> Dict[str, List[Dict]]:
+def filter_meals_by_diet_option(
+        meal_options: Dict[str, Dict[str, List[Food]]],
+        diet_option: MealOption
+) -> Dict[str, List[Dict]]:
     filtered_meals = {
         "categories": []
     }
@@ -356,7 +298,7 @@ def filter_meals_by_diet_option(meal_options: Dict[str, Dict[str, List[Food]]], 
                 "foods": []
             }
             for food in foods:
-                if diet_option_str in food.diet_options:
+                if diet_option_str in food.diet_options or True:
                     food_dict = {
                         "id": food.id,
                         "name": food.name,
