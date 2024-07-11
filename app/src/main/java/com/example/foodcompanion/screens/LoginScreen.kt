@@ -79,7 +79,8 @@ fun LoginPage
             if (verifyID(institutionID, patientID, birthday, pageToNavigateTo) ){
                 pageToNavigateTo()
             }
-        }) {
+        }
+        ) {
             Text("Log In")
         }
     }
