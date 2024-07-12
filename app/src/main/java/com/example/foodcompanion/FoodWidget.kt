@@ -75,7 +75,7 @@ fun FoodWidget(
         .height(80.dp)
         .padding(horizontal = 20.dp)
         .clip(shape = RoundedCornerShape(14.dp))
-        .background(color = Color.hsv(0f, 0f, 0.93f))
+        .background(color = Color(0xFFBBCDE5))
         .clickable { detailsEnabled = !detailsEnabled }
         ){
         Row(modifier = Modifier.fillMaxSize()) {
@@ -145,7 +145,8 @@ fun FoodWidget(
                         painter = painterResource(
                             id = R.drawable.add_circle_24dp_e8eaed_fill0_wght400_grad0_opsz24
                         ),
-                        contentDescription = "add button"
+                        contentDescription = "add button",
+                        tint = Color(0xFF222222)
                     )
                 }
             }

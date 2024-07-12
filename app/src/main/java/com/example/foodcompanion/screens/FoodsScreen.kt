@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,11 +54,27 @@ fun FoodsPage(
             IconButton(onClick = {onBackButtonClicked("test1234")}) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24dp_5f6368_fill0_wght400_grad0_opsz24),
-                    contentDescription = "back arrow"
+                    contentDescription = "back arrow",
+                    tint = Color(0xFF222222)
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
             // filters
+            val checkboxColor = CheckboxColors(
+                checkedCheckmarkColor = Color.White,
+                uncheckedCheckmarkColor = Color.White,
+                checkedBoxColor = Color(0xFF1C5D99),
+                uncheckedBoxColor = Color(0xFFBBCDE5),
+                disabledCheckedBoxColor = Color(0xFFBBCDE5),
+                disabledUncheckedBoxColor = Color.DarkGray,
+                disabledIndeterminateBorderColor = Color.Cyan,
+                checkedBorderColor = Color(0xFFBBCDE5),
+                disabledIndeterminateBoxColor = Color.White,
+                disabledBorderColor = Color.Yellow,
+                disabledUncheckedBorderColor = Color.Red,
+                uncheckedBorderColor = Color(0xFF639FAB)
+            )
+            val filterTextColor = Color(0xFF222222)
             Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()){
                 Row (){
                     val modifier = Modifier
@@ -65,72 +83,86 @@ fun FoodsPage(
                         //Starches
                         Text(
                             "Starches",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedStarch,
                             onCheckedChange = {checkedStarch = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp)
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor
                         )
                         //Vegetables
                         Text(
                             "Vegetables",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedVegetables,
                             onCheckedChange = {checkedVegetables = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                     }
                     Column(modifier = colModifier){
                         //Fruit
                         Text(
                             "Fruit",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedFruit,
                             onCheckedChange = {checkedFruit = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                         //dessert
                         Text(
                             "Dessert",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedDessert,
                             onCheckedChange = {checkedDessert = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                     }
                     Column (modifier = colModifier){
 
                         //Beverages
                         Text(
                             "Beverages",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedBeverages,
                             onCheckedChange = {checkedBeverages = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                         //Condiments
                         Text(
                             "Condiments",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedCondiments,
                             onCheckedChange = {checkedCondiments = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                         //Entrees
                         Text(
                             "Entrees",
-                            modifier = modifier
+                            modifier = modifier,
+                            color = filterTextColor
                         )
                         Checkbox(
                             checked = checkedEntrees,
                             onCheckedChange = {checkedEntrees = it},
-                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp))
+                            modifier = Modifier.absoluteOffset((-12).dp, 0.dp),
+                            colors = checkboxColor)
                     }
                 }
             }

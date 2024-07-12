@@ -24,7 +24,7 @@ fun canAddThisFood(food: Food): Pair<Boolean, String> {
     have a message as to why the food cannot be added. The second part should be "" if the food can be added
     */
     //TODO
-    return Pair(false, "adsfsadfas") //change this!
+    return Pair(true, "adsfsadfas") //change this!
 }
 
 

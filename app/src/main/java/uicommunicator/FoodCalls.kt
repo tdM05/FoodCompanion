@@ -215,8 +215,6 @@ fun FoodsCall(){
             "proteins = 5.0",
             "trans = 0.0",
             "saturated = 80.",
-
-
             )
     )
     val item5 = Pair(fruits, FoodCategory.Breakfast.name)
@@ -233,8 +231,6 @@ fun FoodsCall(){
             "proteins = 3.0",
             "trans = 0.0",
             "saturated = 0.5",
-
-
             )
     )
     val item6 = Pair(beverages, FoodCategory.Breakfast.name)
