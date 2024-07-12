@@ -270,15 +270,42 @@ class Macro:
         self.fats = fats
 
 
+class ServingSizeUnit(Enum):
+    (
+        COUNT,
+        ML,
+        G
+    ) = range(3)
+
+
+class Meal(Enum):
+    (B, L, D) = range(3)
+
+
+class FoodCategory(Enum):
+    (
+        ENTREE,
+        SOUPS,
+        STARCH,
+        VEGETABLE,
+        FRUIT,
+        DESERT,
+        BEVERAGE,
+        CONDIMENT
+    ) = range(8)
+
+
 @dataclass
 class Food:
-    id: str
-    name: str
-    calories: int
-    macros: Macro
-    diets: List[str]
-    diet_options: List[str]
-    serving_size: int = 1
+    id:                 int
+    name:               str
+    calories:           float
+    macros:             Macro
+    diets:              List[MealOption]
+    serving_size_count: float
+    serving_size_unit:  ServingSizeUnit
+    meal:               List[Meal]
+    category:           FoodCategory
 
 
 def filter_meals_by_diet_option(
@@ -298,7 +325,7 @@ def filter_meals_by_diet_option(
                 "foods": []
             }
             for food in foods:
-                if diet_option_str in food.diet_options or True:
+                if diet_option_str in food.diets or True:
                     food_dict = {
                         "id": food.id,
                         "name": food.name,
