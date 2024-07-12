@@ -1,6 +1,7 @@
 import data as sc_data, sqlite3, sys
 from typing import cast, List, Dict, Any, Optional
 from dataclasses import dataclass
+from food import filter_meals as sc_filter_meals
 
 
 @dataclass
@@ -221,4 +222,4 @@ def lookup_patient_diet(
 def get_meal_options(
         diet: sc_data.MealOption
 ) -> Dict[str, Any]:
-    return {}
+    return sc_filter_meals(diet)

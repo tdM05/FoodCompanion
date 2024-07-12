@@ -6,11 +6,83 @@
 import data, json
 from prettytable import PrettyTable
 from typing import cast, Dict, Any, List, Optional
-from enum import Enum
 from data import Food, ServingSizeUnit, MealOption, Macro, Carbohydrates, Fats, Meal, FoodCategory
 
 
 foods: Dict[int, Food] = {}
+
+
+def filter_meals(diet: MealOption) -> Dict[str, Any]:
+    global foods
+
+    load()
+
+    limits = {
+        FoodCategory.ENTREE.name.title():       2,
+        FoodCategory.CONDIMENT.name.title():    None,
+        FoodCategory.SOUPS.name.title():        1,
+        FoodCategory.FRUIT.name.title():        2,
+        FoodCategory.STARCH.name.title():       1,
+        FoodCategory.BEVERAGE.name.title():     2,
+        FoodCategory.DESERT.name.title():       1,
+        FoodCategory.VEGETABLE.name.title():    None
+    }
+
+    d = {
+        "breakfast": {},
+        "lunch": {},
+        "dinner": {}
+    }
+
+    dm = {
+        Meal.B: "breakfast",
+        Meal.L: "lunch",
+        Meal.D: "dinner"
+    }
+
+    print(foods)
+
+    for f in foods.values():
+        if diet not in f.diets:
+            continue
+
+        for m in f.meal:
+            d[dm[m]][f.category.name.title()] = [
+                *d[dm[m]].get(f.category.name.title(), []),
+                {
+                    'id': f.id,
+                    'name': f.name.title(),
+                    'calories': f.calories,
+                    'macros':
+                        {
+                            'carbohydrates':
+                                {
+                                    'starches': f.macros.carbohydrates.starches,
+                                    'sugars': f.macros.carbohydrates.sugars,
+                                    'fiber': f.macros.carbohydrates.fiber
+                                },
+                            'protein': f.macros.proteins,
+                            'fats':
+                                {
+                                    'trans': f.macros.fats.trans,
+                                    'saturated': f.macros.fats.saturated
+                                }
+                        },
+                    'servingSize':
+                        {
+                            'count': f.serving_size_count,
+                            'unit': f.serving_size_unit.name.lower()
+                        },
+                    'appliesTo': list(map(
+                        lambda d: cast(MealOption, d).name,
+                        f.diets
+                    ))
+                }
+            ]
+
+    d['limits'] = limits
+
+    return d
 
 
 def load():
