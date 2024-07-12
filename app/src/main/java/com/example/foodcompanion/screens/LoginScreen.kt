@@ -112,17 +112,16 @@ fun LoginPage
             val context = LocalContext.current
             Button(
                 onClick = {
-                    pageToNavigateTo()
-//                    if (verifyID(institutionID, patientID, birthday, pageToNavigateTo)) {
-//                        pageToNavigateTo()
-//                    } else {
-//                        Toast.makeText(
-//                            context,
-//                            "Log in failed",
-//                            Toast.LENGTH_LONG
-//                        )
-//                            .show()
-//                    }
+                    if (verifyID(institutionID, patientID, birthday, pageToNavigateTo)) {
+                        pageToNavigateTo()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Log in failed",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                 },
                 colors = ButtonColors(Color(0xFF222222), Color(0xFFFFFFFF), Color.Blue, Color.Green)
             ) {
