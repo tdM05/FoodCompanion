@@ -28,24 +28,22 @@
                     "LOW_SODIUM"
                 ]
             }
-        ]
-    },
-    "lunch": {
-        "Entree": [
+        ],
+        "Fruit": [
             {
-                "id": 0,
-                "name": "Grilled Chicken",
-                "calories": 250.0,
+                "id": 2,
+                "name": "Apple",
+                "calories": 80.0,
                 "macros": {
                     "carbohydrates": {
                         "starches": 0.0,
-                        "sugars": 0.0,
-                        "fiber": 0.0
+                        "sugars": 16.0,
+                        "fiber": 4.0
                     },
-                    "protein": 30.0,
+                    "protein": 1.0,
                     "fats": {
                         "trans": 0.0,
-                        "saturated": 2.0
+                        "saturated": 0.1
                     }
                 },
                 "servingSize": {
@@ -55,10 +53,99 @@
                 "appliesTo": [
                     "REGULAR",
                     "DIABETIC",
+                    "LOW_CHOLESTEROL",
                     "LOW_SODIUM"
                 ]
             }
         ],
+        "Beverage": [
+            {
+                "id": 3,
+                "name": "Orange Juice",
+                "calories": 120.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 30.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 1.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 250.0,
+                    "unit": "ml"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Vegetable": [
+            {
+                "id": 4,
+                "name": "Steamed Broccoli",
+                "calories": 50.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 2.0,
+                        "fiber": 2.0
+                    },
+                    "protein": 3.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.5
+                    }
+                },
+                "servingSize": {
+                    "count": 150.0,
+                    "unit": "g"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Condiment": [
+            {
+                "id": 6,
+                "name": "Ketchup",
+                "calories": 20.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 4.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 0.1,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ]
+    },
+    "lunch": {
         "Starch": [
             {
                 "id": 1,
@@ -87,9 +174,267 @@
                     "LOW_SODIUM"
                 ]
             }
+        ],
+        "Fruit": [
+            {
+                "id": 2,
+                "name": "Apple",
+                "calories": 80.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 16.0,
+                        "fiber": 4.0
+                    },
+                    "protein": 1.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.1
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Beverage": [
+            {
+                "id": 3,
+                "name": "Orange Juice",
+                "calories": 120.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 30.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 1.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 250.0,
+                    "unit": "ml"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Vegetable": [
+            {
+                "id": 4,
+                "name": "Steamed Broccoli",
+                "calories": 50.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 2.0,
+                        "fiber": 2.0
+                    },
+                    "protein": 3.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.5
+                    }
+                },
+                "servingSize": {
+                    "count": 150.0,
+                    "unit": "g"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Condiment": [
+            {
+                "id": 6,
+                "name": "Ketchup",
+                "calories": 20.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 4.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 0.1,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Entree": [
+            {
+                "id": 0,
+                "name": "Grilled Chicken",
+                "calories": 250.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 0.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 30.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 2.0
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_SODIUM"
+                ]
+            }
         ]
     },
     "dinner": {
+        "Starch": [
+            {
+                "id": 1,
+                "name": "Brown Rice",
+                "calories": 150.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 0.0,
+                        "fiber": 2.0
+                    },
+                    "protein": 3.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.5
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Fruit": [
+            {
+                "id": 2,
+                "name": "Apple",
+                "calories": 80.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 16.0,
+                        "fiber": 4.0
+                    },
+                    "protein": 1.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.1
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Beverage": [
+            {
+                "id": 3,
+                "name": "Orange Juice",
+                "calories": 120.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 30.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 1.0,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 250.0,
+                    "unit": "ml"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
+        "Condiment": [
+            {
+                "id": 6,
+                "name": "Ketchup",
+                "calories": 20.0,
+                "macros": {
+                    "carbohydrates": {
+                        "starches": 0.0,
+                        "sugars": 4.0,
+                        "fiber": 0.0
+                    },
+                    "protein": 0.1,
+                    "fats": {
+                        "trans": 0.0,
+                        "saturated": 0.0
+                    }
+                },
+                "servingSize": {
+                    "count": 1.0,
+                    "unit": "count"
+                },
+                "appliesTo": [
+                    "REGULAR",
+                    "DIABETIC",
+                    "LOW_CHOLESTEROL",
+                    "LOW_SODIUM"
+                ]
+            }
+        ],
         "Entree": [
             {
                 "id": 0,
@@ -118,21 +463,21 @@
                 ]
             }
         ],
-        "Starch": [
+        "Desert": [
             {
-                "id": 1,
-                "name": "Brown Rice",
-                "calories": 150.0,
+                "id": 5,
+                "name": "Chocolate Cake",
+                "calories": 300.0,
                 "macros": {
                     "carbohydrates": {
-                        "starches": 0.0,
-                        "sugars": 0.0,
+                        "starches": 20.0,
+                        "sugars": 30.0,
                         "fiber": 2.0
                     },
-                    "protein": 3.0,
+                    "protein": 5.0,
                     "fats": {
-                        "trans": 0.0,
-                        "saturated": 0.5
+                        "trans": 2.0,
+                        "saturated": 8.0
                     }
                 },
                 "servingSize": {
@@ -141,7 +486,6 @@
                 },
                 "appliesTo": [
                     "REGULAR",
-                    "DIABETIC",
                     "LOW_CHOLESTEROL",
                     "LOW_SODIUM"
                 ]
