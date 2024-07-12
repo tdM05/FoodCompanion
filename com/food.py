@@ -4,6 +4,7 @@
 """
 
 import data, json
+from prettytable import PrettyTable
 from typing import cast, Dict, Any, List, Optional
 from enum import Enum
 from data import Food, ServingSizeUnit, MealOption, Macro, Carbohydrates, Fats, Meal, FoodCategory
@@ -40,7 +41,9 @@ def load():
             for f in inp[m][c]:
                 fid = f['id']
                 if fid in foods:  # This food already exists, we just need to append another meal to it.
-                    foods[fid].meal.append(M)
+                    if M not in foods[fid].meal:
+                        foods[fid].meal.append(M)
+
                     continue      # Move on to the next food item.
 
                 # This is a new food item and must be deserialized completely.
@@ -215,6 +218,46 @@ def new_item():
         )
 
 
+def update():
+    save()
+    load()
+
+
+def print_list():
+    global foods
+    t = PrettyTable(['ID', 'Name', 'Meal Times', 'Category', 'Calories', 'Starches', 'Sugars', 'Fiber', 'Protein', 'Trans Fats', 'Saturated Fats', 'Serving Size', 'Diet Orders'])
+
+    for f in foods.values():
+        t.add_row(
+            [
+                f.id,
+                f.name.title(),
+                '/'.join(map(lambda m: {
+                    Meal.B: 'Breakfast',
+                    Meal.L: 'Lunch',
+                    Meal.D: 'Dinner'
+                }[m], f.meal)),
+                f.category.name.title(),
+                f.calories,
+                f.macros.carbohydrates.starches,
+                f.macros.carbohydrates.sugars,
+                f.macros.carbohydrates.fiber,
+                f.macros.proteins,
+                f.macros.fats.trans,
+                f.macros.fats.saturated,
+                f'{f.serving_size_count} {f.serving_size_unit.name.lower()}',
+                ', '.join(
+                    map(
+                        lambda d: cast(MealOption, d).name.replace('_', ' '),
+                        f.diets
+                    )
+                )
+            ]
+        )
+
+    print(t)
+
+
 if __name__ == "__main__":
     load()
     print(foods)
@@ -222,11 +265,27 @@ if __name__ == "__main__":
     while True:
         comm = input("COMMAND: ").strip().upper()
 
-        if comm in ("NEW", "CREATE"):
+        if comm in ("NEW", "CREATE", "ADD"):
             new_item()
 
         elif comm in ("SAVE", "WRITE"):
             save()
+
+        elif comm == 'LIST':
+            update()
+            print_list()
+
+        elif comm == 'HELP':
+            print("Commands: ")
+            print()
+            print("NEW..........................................Add a food item to the menu.")
+            print("     Aliases: CREATE, ADD")
+            print()
+            print("SAVE....................................Save any changes to the database.")
+            print("     Aliases: WRITE")
+            print()
+            print("LIST............................Get a list of all food items in the menu.")
+            print()
 
         else:
             save()
