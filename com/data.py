@@ -18,8 +18,6 @@ RSA_N_E_DELIM      = b'!'
 HEADER_PAD_BYTE    = b'='
 MESSAGE_DELIM      = b'~'
 
-CD_PATIENT_NOT_FOUND = 'ERR.PTNF'
-
 # The app version should be loaded from a configuration file, ideally
 APP_VERSION        = 20240708122100
 
@@ -306,3 +304,18 @@ class Food:
     serving_size_unit:  ServingSizeUnit
     meal:               List[Meal]
     category:           FoodCategory
+
+
+# Errors
+
+
+class Errors:
+    GENERAL             = 'ERR.EXIT'
+    BAD_HEADER          = 'ERR.HEDR'
+    BAD_REQUEST         = 'ERR.RQST'
+    PATIENT_NOT_FOUND   = 'ERR.PTNF'
+    BAD_TRANSMISSION    = 'ERR.TRNS'
+    CLIENT_VERSION      = 'ERR.CAVS'
+    INCOMPLETE_MESSAGE  = 'ERR.INCM'
+
+

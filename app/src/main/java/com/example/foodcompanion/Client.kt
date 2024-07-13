@@ -111,7 +111,6 @@ class Client : Runnable
             return false
         }
 
-
         if (client!!.isConnected)
             Log.d(SC, "Connected to TCP server.")
         else
@@ -224,7 +223,9 @@ class NClient: Runnable
         NC_comError = false
         NC_reply = null
 
-        if (globalTCPInfo == null || sip == null)
+        sip = null
+
+        if (globalTCPInfo == null)
         {
             Log.e(SC, "Cannot send message - session not established.")
             return
@@ -240,15 +241,38 @@ class NClient: Runnable
         val hm: ByteArray = (hmsg ?: return).encodeToByteArray()
         val em: ByteArray = emsg ?: return
 
+        var s: Socket? = null
 
-        val s = Socket(sip, port)
+        for (ip in ips.iterator())
+        {
+            if (ip == "") continue
+
+            Log.d(SC, "Trying to connect to $ip:$port.")
+
+            try
+            {
+                s = Socket(ip, port)
+                sip = ip
+            }
+            catch (ignore: Exception)
+            {
+                continue
+            }
+
+        }
+
+        if (sip == null)
+        {
+            Log.e(SC, "Could not connect to any IP")
+            return
+        }
 
         var out = hb
         out += hm
         out += em
 
         Log.i(SC, "Sending HDrHM-format message to server.")
-        s.outputStream.write(out)
+        s!!.outputStream.write(out)
 
         var inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
         var inputBytes = s.inputStream.read(inputBuff)
@@ -258,6 +282,8 @@ class NClient: Runnable
 
         if (inputStr == "")
         {
+            Log.w(SC, "Connection closed.")
+
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, null)
@@ -276,12 +302,16 @@ class NClient: Runnable
             inputStr == TCP_ERR_PATIENT_NOT_FOUND
         )
         {
+            Log.w(SC, "SC_WARN: $inputStr")
+
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, inputStr)
 
             return
         }
+
+        Log.d(SC, "Decoding meal options...")
 
 // We got a message; (1) parse header, (2) load all of the message (if not already)
         val header = loadHeader(
@@ -299,7 +329,6 @@ class NClient: Runnable
 
             inputBuff += pBuff
             inputBytes += pBytes
-
         }
 
         val finalReplyStr = String(inputBuff, 0, inputBytes)
