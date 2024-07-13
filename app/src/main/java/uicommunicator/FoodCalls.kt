@@ -22,13 +22,13 @@ fun getFoodObject(
     */
     var imageID = 0
     when (foodCategory) {
-        FoodTypes.Starches.name -> imageID = R.drawable.starches
-        FoodTypes.Vegetables.name -> imageID = R.drawable.broccoli_78ec54e
-        FoodTypes.Fruits.name -> imageID = R.drawable.fruits
-        FoodTypes.Dessert.name -> imageID = R.drawable.desert
-        FoodTypes.Beverages.name -> imageID = R.drawable.beverages
-        FoodTypes.Condiments.name -> imageID = R.drawable.condiments
-        FoodTypes.Entrees.name -> imageID = R.drawable.entrees
+        FoodTypes.Starches.name -> imageID = R.drawable.starchicon
+        FoodTypes.Vegetables.name -> imageID = R.drawable.vegetable
+        FoodTypes.Fruits.name -> imageID = R.drawable.fruiticon
+        FoodTypes.Dessert.name -> imageID = R.drawable.desserticon
+        FoodTypes.Beverages.name -> imageID = R.drawable.beverageicon
+        FoodTypes.Condiments.name -> imageID = R.drawable.condimenticon
+        FoodTypes.Entrees.name -> imageID = R.drawable.entreeicon
         else -> {
             imageID = R.drawable.broccoli_78ec54e
         }

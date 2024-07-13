@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,25 +77,33 @@ fun FoodWidget(
         .height(80.dp)
         .padding(horizontal = 20.dp)
         .clip(shape = RoundedCornerShape(14.dp))
-        .background(color = Color(0xFFBBCDE5))
+        .background(color = Color(0xFF1C5D99))
         .clickable { detailsEnabled = !detailsEnabled }
         ){
         Row(modifier = Modifier.fillMaxSize()) {
-            Image(
-                painter = painterResource(id = food.foodImageID),
-                contentDescription = food.foodName,
-                alignment = AbsoluteAlignment.CenterLeft,
-                modifier = Modifier.aspectRatio(2f)
-            )
+            Box(
+                modifier = Modifier.height(80.dp).width(80.dp).
+                background(color = Color(0xFFBBCDE5))
+            ) {
+                Icon(
+                    painter = painterResource(id = food.foodImageID),
+                    contentDescription = food.foodName,
+                    tint = Color(0xFF639FAB),
+                    modifier = Modifier.size(60.dp).align(Alignment.Center)
+                    //alignment = AbsoluteAlignment.CenterLeft,
+                    //modifier = Modifier.aspectRatio(1f)
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Column (
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)){
-                Text(text = food.foodName)
-                Text(text = "Serving size of:" + food.servingSize)
-                Text(text = food.foodCategory)
+                val col = Color(0xFFFFFFFF)
+                Text(text = food.foodName, color = col)
+                Text(text = "Serving size of:" + food.servingSize, color = col)
+                Text(text = food.foodCategory, color = col)
             }
             if (removeFromFoodList != null) {
                 IconButton(
@@ -146,7 +156,7 @@ fun FoodWidget(
                             id = R.drawable.add_circle_24dp_e8eaed_fill0_wght400_grad0_opsz24
                         ),
                         contentDescription = "add button",
-                        tint = Color(0xFF222222)
+                        tint = Color(0xFFFFFFFF)
                     )
                 }
             }
@@ -154,9 +164,12 @@ fun FoodWidget(
         }
         DropdownMenu(expanded = detailsEnabled,
             onDismissRequest = { detailsEnabled = false},
-            modifier = Modifier) {
+
+            modifier = Modifier.background(color = Color(0xFF1C5D99))
+        ) {
             for (detail in food.foodDetails) {
-                Text(detail)
+                Text(detail, color = Color(0xFFFFFFFF),
+                    modifier = Modifier.padding(8.dp))
             }
         }
     }
@@ -168,7 +181,7 @@ fun FoodWidget(
 @Preview(showBackground = true)
 @Composable
 fun Preview(){
-    val myFood = Food(foodName = "Ice cream", foodImageID = R.drawable.desert,
+    val myFood = Food(foodName = "Ice cream", foodImageID = R.drawable.desserticon,
         servingSize = "16g",
         foodCategory = "Vegetables")
     FoodWidget(food = myFood)
