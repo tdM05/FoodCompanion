@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uicommunicator.verifyID
@@ -45,7 +48,9 @@ fun LoginPage
     modifier: Modifier = Modifier
 )
 {
-    val spaceHeight = 26.dp
+    val pattern = remember { Regex("^\\d+\$") }
+    val spaceHeight = 28.dp
+    val textPadding = 24.dp
     Box(Modifier.background(color = Color(0xFFFFFFFF))) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -72,14 +77,20 @@ fun LoginPage
                 unfocusedIndicatorColor = Color(0xFF639FAB)
             )
             val textLabelColor = Color(0xFFFFFFFF)
+            val textWidth = 284.dp
+            val textHeight = 30.dp
             //patient ID
             var patientID by remember { mutableStateOf("") }
             TextField(
                 value = patientID,
-                onValueChange = { patientID = it },
+                onValueChange = {
+                    if (it.isEmpty() || it.matches(pattern)) {
+                        patientID = it
+                    }
+                                },
                 label = { Text("Patient ID", color = textLabelColor) },
                 singleLine = true,
-                modifier = modifier,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = textPadding),
                 colors = textFieldColor,
                 textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
             )
@@ -90,10 +101,14 @@ fun LoginPage
             var institutionID by remember { mutableStateOf("") }
             TextField(
                 value = institutionID,
-                onValueChange = { institutionID = it },
+                onValueChange = {
+                    if (it.isEmpty() || it.matches(pattern)) {
+                        institutionID = it
+                    }
+                                },
                 label = { Text("Institution ID", color = textLabelColor) },
                 singleLine = true,
-                modifier = modifier,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = textPadding),
                 colors = textFieldColor,
                 textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
             )
@@ -104,34 +119,79 @@ fun LoginPage
             var year by remember { mutableStateOf("") }
             var month by remember { mutableStateOf("") }
             var day by remember { mutableStateOf("") }
-            val biMod = Modifier.weight(1f).padding(horizontal = 8.dp)
-            val smallMod = Modifier.weight(0.75f).padding(horizontal = 8.dp)
-            Row (horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(horizontal = 48.dp)){
+            val biMod = Modifier.weight(1f)
+            val smallMod = Modifier.weight(0.75f)
+            Text(text = "Date of Birth",
+                fontSize = 20.sp,
+                color = Color(0xFF1C5D99),
+                modifier = Modifier.align(Alignment.Start).padding(horizontal = textPadding)
+            )
+            Row (
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = textPadding)
+            ){
                 TextField(
                     value = year,
-                    onValueChange = { year = it },
+                    onValueChange = {
+                        if ((it.isEmpty() || it.matches(pattern))&&
+                            it.length <= 4) {
+                            val intIt = it.toIntOrNull()
+                            year = if (intIt == null) {
+                                it
+                            } else if (intIt <= 2024){
+                                it
+                            } else {
+                                "2024"
+                            }
+                        }
+                                    },
                     label = { Text("(YYYY)", color = textLabelColor) },
                     singleLine = true,
-                    modifier = biMod,
+                    modifier = biMod.padding(end = 16.dp),
                     colors = textFieldColor,
                     textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
                 )
                 TextField(
-                    value = year,
-                    onValueChange = { year = it },
-                    label = { Text("(MM)", color = textLabelColor) },
+                    value = month,
+                    onValueChange = {
+                        if ((it.isEmpty() || it.matches(pattern))&&
+                            it.length <= 2) {
+                            val intIt = it.toIntOrNull()
+                            month = if (intIt == null) {
+                                it
+                            } else if (intIt <= 12) {
+                                it
+                            } else{
+                                "12"
+                            }
+                        }
+                    },
+                    label = {
+                        Text("(MM)", color = textLabelColor)
+                            },
                     singleLine = true,
-                    modifier = smallMod,
+                    modifier = smallMod.padding(end = 8.dp),
                     colors = textFieldColor,
                     textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
                 )
                 TextField(
-                    value = year,
-                    onValueChange = { year = it },
+                    value = day,
+                    onValueChange = {
+                        if ((it.isEmpty() || it.matches(pattern))&&
+                            it.length <= 2) {
+                            val intIt = it.toIntOrNull()
+                            day = if (intIt == null) {
+                                it
+                            } else if (intIt <= 31) {
+                                it
+                            } else{
+                                "31"
+                            }
+                        }
+                                    },
                     label = { Text("(DD)", color = textLabelColor) },
                     singleLine = true,
-                    modifier = smallMod,
+                    modifier = smallMod.padding(start = 8.dp),
                     colors = textFieldColor,
                     textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
                 )
