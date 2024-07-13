@@ -1,13 +1,17 @@
 package com.example.foodcompanion.screens
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uicommunicator.verifyID
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage
@@ -72,7 +77,7 @@ fun LoginPage
             TextField(
                 value = patientID,
                 onValueChange = { patientID = it },
-                label = { Text("patient ID", color = textLabelColor) },
+                label = { Text("Patient ID", color = textLabelColor) },
                 singleLine = true,
                 modifier = modifier,
                 colors = textFieldColor,
@@ -96,23 +101,48 @@ fun LoginPage
             Spacer(modifier = Modifier.height(spaceHeight))
 
             //date of birth
-            var birthday by remember { mutableStateOf("") }
-            TextField(
-                value = birthday,
-                onValueChange = { birthday = it },
-                label = { Text("Birthday (YYYYMMDD)", color = textLabelColor) },
-                singleLine = true,
-                modifier = modifier,
-                colors = textFieldColor,
-                textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
-            )
+            var year by remember { mutableStateOf("") }
+            var month by remember { mutableStateOf("") }
+            var day by remember { mutableStateOf("") }
+            val biMod = Modifier.weight(1f).padding(horizontal = 8.dp)
+            val smallMod = Modifier.weight(0.75f).padding(horizontal = 8.dp)
+            Row (horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 48.dp)){
+                TextField(
+                    value = year,
+                    onValueChange = { year = it },
+                    label = { Text("(YYYY)", color = textLabelColor) },
+                    singleLine = true,
+                    modifier = biMod,
+                    colors = textFieldColor,
+                    textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
+                )
+                TextField(
+                    value = year,
+                    onValueChange = { year = it },
+                    label = { Text("(MM)", color = textLabelColor) },
+                    singleLine = true,
+                    modifier = smallMod,
+                    colors = textFieldColor,
+                    textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
+                )
+                TextField(
+                    value = year,
+                    onValueChange = { year = it },
+                    label = { Text("(DD)", color = textLabelColor) },
+                    singleLine = true,
+                    modifier = smallMod,
+                    colors = textFieldColor,
+                    textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
+                )
+            }
             Spacer(modifier = Modifier.height(spaceHeight))
 
             //This is the button
             val context = LocalContext.current
             Button(
                 onClick = {
-                    if (verifyID(institutionID, patientID, birthday, pageToNavigateTo)) {
+                    if (verifyID(institutionID, patientID, (year+month+day), pageToNavigateTo)) {
                         pageToNavigateTo()
                     } else {
                         Toast.makeText(
@@ -131,6 +161,7 @@ fun LoginPage
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun TextFieldPreview() {
