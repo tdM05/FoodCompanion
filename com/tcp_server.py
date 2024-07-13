@@ -193,7 +193,7 @@ class Server:
         _conn, *_ = self.__connections[__c_name]
         _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
 
-        stdout(f'{_rcv}\n')
+        stdout(f'[{__c_name}] Received "{_rcv}"\n')
 
         if not _rcv:
             stderr(f'[{__c_name}] Connection closed.\n')
@@ -275,6 +275,9 @@ class Server:
 
         self.__connections[__c_name] = (_conn, _addr, __pb, __pr)
         self.__sessions[_ses_tok] = (__pb, __pr)
+
+        # TODO: Remove this.
+        print(self.__sessions[_ses_tok])
 
         stdout(f'[{__c_name}] New session {_ses_tok}\n')
 
