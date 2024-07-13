@@ -37,7 +37,9 @@ from com.data import (
     Meal,
     FoodCategory,
     Food,
-    TCP as srv_TCP
+    TCP as srv_TCP,
+
+    Errors
 )
 import socket
 
