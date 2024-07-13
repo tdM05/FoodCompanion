@@ -2,6 +2,7 @@ package uicommunicator;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.util.Arrays;
 
@@ -26,11 +27,11 @@ public class Encryptor {
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
             PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
             Cipher rsa;
-            rsa = Cipher.getInstance("RSA");
+            rsa = Cipher.getInstance("RSA/NONE/PKCS1Padding");
             rsa.init(Cipher.ENCRYPT_MODE, publicKey);
 //            byte[] encrypted = rsa.doFinal(message.getBytes());
 //            return Arrays.toString(encrypted);
-            return rsa.doFinal(message.getBytes());
+            return rsa.doFinal(message.getBytes(StandardCharsets.UTF_8));
         }
         catch (Exception e)
         {

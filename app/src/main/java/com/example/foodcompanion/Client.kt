@@ -137,8 +137,8 @@ class NClient: Runnable
 
     override fun run()
     {
-        val hb: ByteArray = (hdr ?: return).first.toByteArray()
-        val hm: ByteArray = (hmsg ?: return).toByteArray()
+        val hb: ByteArray = (hdr ?: return).first.encodeToByteArray()
+        val hm: ByteArray = (hmsg ?: return).encodeToByteArray()
         val em: ByteArray = emsg ?: return
 
 
