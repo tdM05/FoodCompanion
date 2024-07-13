@@ -207,11 +207,15 @@ class Server:
                 _conn.close()
 
             except AssertionError as _AE:
-                stderr(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE)}\n')
-                _conn.send(str(_AE).encode())
+                stderr(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE).split("//")[0].strip()}\n')
+                _conn.send(str(_AE).split('//')[-1].strip())
                 self._remove(__c_name)
 
                 return
+
+            except Exception as E:
+                stderr(f'[{__c_name}] Failed to handle NW_CON req: {E.__class__.__name__}({str(E)})')
+                _conn.send(sc_data.Errors.GENERAL)
 
         elif _rcv[:sc_data.DATETIME_FRMT_SIZE].decode().isnumeric():  # The first part of the header must be the date
             try:
@@ -219,11 +223,15 @@ class Server:
                 _conn.close()
 
             except AssertionError as _AE:
-                stderr(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE)}\n')
-                _conn.send(str(_AE).encode())
+                stderr(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE).split("//")[0].strip()}\n')
+                _conn.send(str(_AE).split('//')[-1].strip())
                 self._remove(__c_name)
 
                 return
+
+            except Exception as E:
+                stderr(f'[{__c_name}] Failed to handle MEAL_OPTIONS req: {E.__class__.__name__}({str(E)})')
+                _conn.send(sc_data.Errors.GENERAL)
 
         else:
             if b'GET' in _rcv and b'HTTP' in _rcv: # This is an HTTP request
@@ -258,13 +266,13 @@ class Server:
         self._remove(__c_name)
 
     def _new_client(self, __rcv: bytes, __c_name: str) -> None:
-        assert len(__rcv) >= (len(sc_data.NEW_CONN_CODE) + sc_data.APP_VI_STRING_SIZE), 'Bad Request (0)'
+        assert len(__rcv) >= (len(sc_data.NEW_CONN_CODE) + sc_data.APP_VI_STRING_SIZE), f'Bad Request (0) // {sc_data.Errors.INCOMPLETE_MESSAGE}'
 
         cd = __rcv[:len(sc_data.NEW_CONN_CODE):]
         vi = int(__rcv[len(sc_data.NEW_CONN_CODE)::])
 
-        assert cd == sc_data.NEW_CONN_CODE,                                             'Bad Request (1)'
-        assert Server.is_compatible(int(vi)),                                           'Incompatible client version.'
+        assert cd == sc_data.NEW_CONN_CODE,                                             f'Bad Request (1) // {sc_data.Errors.BAD_REQUEST}'
+        assert Server.is_compatible(int(vi)),                                           f'Incompatible client version. // {sc_data.Errors.CLIENT_VERSION}'
 
         # The app is compatible, make a session token, RSA encryption key, and send it over.
         _conn, _addr, *_ = self.__connections[__c_name]
@@ -299,7 +307,7 @@ class Server:
 
             _rest_of_hdr = _conn.recv(_n_bytes)
 
-            assert len(_rest_of_hdr) == _n_bytes, 'Could not receive a complete header.'
+            assert len(_rest_of_hdr) == _n_bytes, f'Could not receive a complete header. // {sc_data.Errors.BAD_HEADER}'
             __rcv += _rest_of_hdr
 
         # Decode the header
@@ -311,7 +319,7 @@ class Server:
         if _complete_message_len <= _il:
             __rcv += _conn.recv(_complete_message_len - _il)
 
-            assert len(__rcv) == _complete_message_len, 'Could not receive complete message.'
+            assert len(__rcv) == _complete_message_len, f'Could not receive complete message. // {sc_data.Errors.INCOMPLETE_MESSAGE}'
 
         _chk = __rcv[_std_hdr_len:_std_hdr_len + sc_data.SHA3_256_HASH_SIZE:].decode()
         _msg = __rcv[_std_hdr_len + sc_data.SHA3_256_HASH_SIZE::]
@@ -319,7 +327,7 @@ class Server:
         rx = sc_data.Transmission(_hdr, _chk, _msg)
         comp_hash = hashlib.sha256(rx.message).hexdigest()
 
-        assert rx.msg_hash == comp_hash, f'E({rx.msg_hash}) | R({comp_hash})'
+        assert rx.msg_hash == comp_hash, f'E({rx.msg_hash}) | R({comp_hash}) // {sc_data.Errors.BAD_TRANSMISSION}'
         __prk = Server.__sessions[rx.header.H_SES_TOK][-1]
 
         __msg_dec = rsa.decrypt(rx.message, __prk)
@@ -343,9 +351,11 @@ class Server:
             stderr(f'[{__c_name}] Patient not found.\n')
 
             # Send back the patient not found error code.
-            _reply_to(_conn, sc_data.CD_PATIENT_NOT_FOUND.encode(), rx.header.H_SES_TOK)
+            # _reply_to(_conn, sc_data.CD_PATIENT_NOT_FOUND.encode(), rx.header.H_SES_TOK)
+            # The above line was commented out because the server will automatically send the error code
+            #   below to the client.
 
-            assert False, 'Patient not found.'
+            assert False, f'Patient not found. {sc_data.Errors.PATIENT_NOT_FOUND}'
 
         # Send meal options
         _reply_to(_conn, json.dumps(sc_db.get_meal_options(pt_diet)).encode(), rx.header.H_SES_TOK)
