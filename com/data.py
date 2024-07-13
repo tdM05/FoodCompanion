@@ -32,7 +32,7 @@ APP_VERSION        = 20240708122100
 #       Should the client script prompt for an IP?
 #       This should be set to True only if a static IP is not available.
 #
-SRVC_CLT_POL_IP = True
+SRVC_CLT_POL_IP = False
 
 # DEFAULT TCP RECV LENGTH (_SRVC_TCP_RECV_N)
 #
