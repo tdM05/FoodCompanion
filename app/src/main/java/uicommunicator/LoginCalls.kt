@@ -121,7 +121,7 @@ fun verifyID(
             ptInfo.patientID.toString().length +            /* Length of patient ID */
             2                                               /* 2 delimiter characters */
 
-    /*  TODO: This message will be changed to {instID}\1{patientDOB}\1{patientID} once encryption is working. */
+    /*  TODO: This message will be changed to {instID}~{patientDOB}~{patientID} once encryption is working. */
 
     val outMessage: String = "${ptInfo.institutionID}~${ptInfo.patientDOB}~${ptInfo.patientID}"
     val header = createHeader(msgLength.toLong(), tcpInfo.sessionToken!!)
