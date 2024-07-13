@@ -1,26 +1,21 @@
 package uicommunicator;
 
-import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
-import java.security.Security;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.bouncycastle.util.encoders.Base64;
 
 
 public class Encryptor {
 
-    public static String RSAEncrypt(String message, String publicKeyString)
+    public static byte[] RSAEncrypt(String message, String publicKeyString)
     {
 
         try{
@@ -32,15 +27,18 @@ public class Encryptor {
             JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
             PublicKey publicKey = converter.getPublicKey(subjectPublicKeyInfo);
             Cipher rsa;
-            rsa = Cipher.getInstance("RSA", "BC");
+            rsa = Cipher.getInstance("RSA/NONE/PKCS1Padding");
             rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-            byte[] encrypted = rsa.doFinal(message.getBytes());
-            return encrypted.toString();
+//            byte[] encrypted = rsa.doFinal(message.getBytes());
+//            return Arrays.toString(encrypted);
+            return rsa.doFinal(message.getBytes(StandardCharsets.UTF_8));
         }
         catch (Exception e)
         {
-            return e.getMessage();
+//            return e.getMessage();
+            return new byte [0];
         }
+
     }
 
 

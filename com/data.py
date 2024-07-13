@@ -16,7 +16,7 @@ DATE_FRMT_SIZE     = 8
 NEW_CONN_CODE      = b'NW_CON'
 RSA_N_E_DELIM      = b'!'
 HEADER_PAD_BYTE    = b'='
-MESSAGE_DELIM      = b'\x01'
+MESSAGE_DELIM      = b'~'
 
 CD_PATIENT_NOT_FOUND = 'ERR.PTNF'
 
@@ -32,7 +32,7 @@ APP_VERSION        = 20240708122100
 #       Should the client script prompt for an IP?
 #       This should be set to True only if a static IP is not available.
 #
-SRVC_CLT_POL_IP = True
+SRVC_CLT_POL_IP = False
 
 # DEFAULT TCP RECV LENGTH (_SRVC_TCP_RECV_N)
 #

@@ -6,7 +6,9 @@ import androidx.annotation.RequiresApi
 import com.example.foodcompanion.Client
 import com.example.foodcompanion.TCPInfo
 import com.example.foodcompanion.globalTCPInfo
+import com.example.foodcompanion.NClient
 import uicommunicator.Encryptor.RSAEncrypt
+import java.net.Socket
 import java.security.MessageDigest
 
 
@@ -119,9 +121,9 @@ fun verifyID(
             ptInfo.patientID.toString().length +            /* Length of patient ID */
             2                                               /* 2 delimiter characters */
 
-    /*  TODO: This message will be changed to {instID}\1{patientDOB}\1{patientID} once encryption is working. */
+    /*  TODO: This message will be changed to {instID}~{patientDOB}~{patientID} once encryption is working. */
 
-    val outMessage: String = "Hello, World!"
+    val outMessage: String = "${ptInfo.institutionID}~${ptInfo.patientDOB}~${ptInfo.patientID}"
     val header = createHeader(msgLength.toLong(), tcpInfo.sessionToken!!)
 
     /* TODO:
@@ -132,12 +134,14 @@ fun verifyID(
     *   Wait for the response and decode it.
     *  */
 
-    val encryptedMessage: String = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+    val encryptedMessage: ByteArray = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+    val hashedMessage : String = MessageDigest.getInstance("SHA-256").digest(encryptedMessage).fold("") { str, it -> str + "%02x".format(it) }
 
-    val hashedMessage : String? = MessageDigest.getInstance("SHA-256").digest(encryptedMessage.toByteArray()).fold("") { str, it -> str + "%02x".format(it) }
-    Log.d(SC, encryptedMessage)
-    Log.d(SC, "$hashedMessage")
+    NClient.hdr = header
+    NClient.hmsg = hashedMessage
+    NClient.emsg = encryptedMessage
 
+    Thread(NClient()).start()
 
     return true
 }
