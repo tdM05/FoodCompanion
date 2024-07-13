@@ -17,7 +17,8 @@ def filter_meals(diet: MealOption) -> Dict[str, Any]:
 
     load()
 
-    limits = {
+    limits = \
+    {
         FoodCategory.ENTREE.name.title():       2,
         FoodCategory.CONDIMENT.name.title():    None,
         FoodCategory.SOUPS.name.title():        1,
@@ -29,6 +30,7 @@ def filter_meals(diet: MealOption) -> Dict[str, Any]:
     }
 
     d = {
+        "dietOrder": diet.name.title().replace('_', ' '),
         "breakfast": {},
         "lunch": {},
         "dinner": {}
@@ -39,8 +41,6 @@ def filter_meals(diet: MealOption) -> Dict[str, Any]:
         Meal.L: "lunch",
         Meal.D: "dinner"
     }
-
-    print(foods)
 
     for f in foods.values():
         if diet not in f.diets:

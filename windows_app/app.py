@@ -1,16 +1,7 @@
-import customtkinter as ctk
-
-ctk.set_appearance_mode("System")  # Follow the system appearance (dark/light mode)
-ctk.set_default_color_theme("dark-blue")
+import tkinter as tk
+import winclient as sc_client, data as sc_data
 
 
-app = ctk.CTk()
-app.geometry('400x240')
+if __name__ == "__main__":
+    print(sc_client.WinClient.login('UHNBC', 20030101, 10020684))
 
-def button_pressed():
-    print("btn")
-
-button = ctk.CTkButton(master=app, text="CTKButton", command=button_pressed)
-button.pack(expand=False)
-
-app.mainloop()

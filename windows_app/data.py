@@ -10,7 +10,6 @@ from com.data import (
     RSA_N_E_DELIM,
     HEADER_PAD_BYTE,
     MESSAGE_DELIM,
-    CD_PATIENT_NOT_FOUND,
     APP_VERSION,
 
     SRVC_CLT_POL_IP,
