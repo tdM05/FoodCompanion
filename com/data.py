@@ -16,7 +16,7 @@ DATE_FRMT_SIZE     = 8
 NEW_CONN_CODE      = b'NW_CON'
 RSA_N_E_DELIM      = b'!'
 HEADER_PAD_BYTE    = b'='
-MESSAGE_DELIM      = b'\x01'
+MESSAGE_DELIM      = b'~'
 
 CD_PATIENT_NOT_FOUND = 'ERR.PTNF'
 

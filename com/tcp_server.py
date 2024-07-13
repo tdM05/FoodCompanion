@@ -325,6 +325,8 @@ class Server:
         __msg_dec = rsa.decrypt(rx.message, __prk)
         __inst_id, __p_dob, __p_uid = __msg_dec.split(sc_data.MESSAGE_DELIM)
 
+        print(__inst_id, __p_dob, __p_uid)
+
         __inst_id = __inst_id.decode().strip().upper()
         __p_dob = __p_dob.decode().strip()
         __p_uid = __p_uid.decode().strip()
