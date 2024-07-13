@@ -8,8 +8,10 @@ import com.example.foodcompanion.TCPInfo
 import com.example.foodcompanion.globalTCPInfo
 import com.example.foodcompanion.NClient
 import uicommunicator.Encryptor.RSAEncrypt
-import java.net.Socket
 import java.security.MessageDigest
+import com.example.foodcompanion.NC_reply
+import com.example.foodcompanion.NC_comError
+import com.example.foodcompanion.NC_replyAvailable
 
 
 data class PTInfo(
@@ -96,7 +98,7 @@ fun verifyID(
     Log.d(SC, "Logging In; I(${ptInfo.institutionID}), P(${ptInfo.patientDOB}), D(${ptInfo.patientID})")
 
     Thread(Client()).start()
-    while (globalTCPInfo == null) { Log.v(SC, "Waiting...") }
+    while (globalTCPInfo == null) { Log.v(SC, "Waiting for TCPClient") }
 
     val tcpInfo: TCPInfo = globalTCPInfo!!
 
@@ -109,6 +111,7 @@ fun verifyID(
     {
         Log.e(SC, "Not connected to server.")
         throw Exception("Not connected to server.")
+
     }
 
     Log.i(SC, "Successfully connected to the server.")
@@ -142,6 +145,21 @@ fun verifyID(
     NClient.emsg = encryptedMessage
 
     Thread(NClient()).start()
+
+    while (!NC_replyAvailable) { Log.v(SC, "Waiting for TCPClient2") }
+
+    if (
+        NC_comError                 ||
+        NC_reply?.hash == null      ||
+        NC_reply?.message == null   ||
+        NC_reply?.header == null
+    ) {
+        Log.e(SC, "Login failed.")
+        return false
+    }
+
+    val dietJson: String = NC_reply?.message!!
+    Log.i(SC, "Received diet order: $dietJson")
 
     return true
 }

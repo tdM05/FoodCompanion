@@ -1,13 +1,21 @@
 package com.example.foodcompanion
 
-import android.content.Context
-import android.net.wifi.WifiManager
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import java.net.Socket
+import uicommunicator.appVersion
+import uicommunicator.loadHeader
+import uicommunicator.Transmission
 
 
-val appVersion: Long        = 20240708122100
+val TCP_ERR_GENERAL             = "ERR.EXIT"
+val TCP_ERR_BAD_HEADER          = "ERR.HEDR"
+val TCP_ERR_BAD_REQUEST         = "ERR.RQST"
+val TCP_ERR_PATIENT_NOT_FOUND   = "ERR.PTNF"
+val TCP_ERR_BAD_TRANSMISSION    = "ERR.TRNS"
+val TCP_ERR_CLIENT_VERSION      = "ERR.CAVS"
+val TCP_ERR_INCOMPLETE_MESSAGE  = "ERR.INCM"
+
+val TCP_DEFAULT_RECV_LEN        = 1024
 
 /* Network */
 
@@ -29,10 +37,9 @@ class Client : Runnable
     private var connected: Boolean      = false
     private var pubKey: String?         = null
     private var sessionToken: String?   = null
-    private val appVersion: Long        = 20240708122100
 
-    private val isConnected: Boolean get() = connected
-    private val getAppVersion: Long get() = appVersion
+    private val isConnected: Boolean get()  = connected
+    private val getAppVersion: Long get()   = appVersion
 
     val tcpInfo: TCPInfo get() = TCPInfo(connected, pubKey, sessionToken, appVersion)
 
@@ -67,7 +74,7 @@ class Client : Runnable
         oStream.write(loginMsg)
 
         // Get the information.
-        val inputBuff = ByteArray(1024)
+        val inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
         val inputBytes = iStream.read(inputBuff)
 
         if (inputBytes == -1)
@@ -80,6 +87,21 @@ class Client : Runnable
 
             val inputStr = String(inputBuff, 0, inputBytes)
             Log.d(SC, "RCV:RAW $inputStr")
+
+            if (
+                inputStr == TCP_ERR_GENERAL             ||
+                inputStr == TCP_ERR_CLIENT_VERSION      ||
+                inputStr == TCP_ERR_BAD_HEADER          ||
+                inputStr == TCP_ERR_BAD_REQUEST         ||
+                inputStr == TCP_ERR_BAD_TRANSMISSION    ||
+                inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
+                inputStr == TCP_ERR_PATIENT_NOT_FOUND
+            )
+            {
+                Log.d(SC, "ERROR: $inputStr")
+                return false
+            }
+
             assert(inputStr.length > 5)
 
             val cd = inputStr.subSequence(0, 6)
@@ -124,9 +146,14 @@ class Client : Runnable
 }
 
 
+var NC_replyAvailable: Boolean = false
+var NC_comError: Boolean       = false
+var NC_reply: Transmission?    = null
+
+
 class NClient: Runnable
 {
-    val SC = "TCPClient2"
+    private val SC = "TCPClient2"
 
     companion object
     {
@@ -137,6 +164,23 @@ class NClient: Runnable
 
     override fun run()
     {
+
+        NC_replyAvailable = false
+        NC_comError = false
+        NC_reply = null
+
+        if (globalTCPInfo == null)
+        {
+            Log.e(SC, "Cannot send message - session not established.")
+            return
+        }
+
+        if (globalTCPInfo!!.sessionToken == null)
+        {
+            Log.e(SC, "Cannot send message - session not established.")
+            return
+        }
+
         val hb: ByteArray = (hdr ?: return).first.encodeToByteArray()
         val hm: ByteArray = (hmsg ?: return).encodeToByteArray()
         val em: ByteArray = emsg ?: return
@@ -147,11 +191,68 @@ class NClient: Runnable
         var out = hb
         out += hm
         out += em
-//        out += em
-//        out += hb
-//        out += hm
 
         s.outputStream.write(out)
+
+        var inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
+        var inputBytes = s.inputStream.read(inputBuff)
+
+        val inputStr = String(inputBuff, 0, inputBytes)
+
+        if (inputStr == "")
+        {
+            NC_replyAvailable = true
+            NC_comError = true
+            NC_reply = Transmission(null, null, null)
+
+            return
+        }
+
+//      Compare to error codes.
+        if (
+            inputStr == TCP_ERR_GENERAL             ||
+            inputStr == TCP_ERR_CLIENT_VERSION      ||
+            inputStr == TCP_ERR_BAD_HEADER          ||
+            inputStr == TCP_ERR_BAD_REQUEST         ||
+            inputStr == TCP_ERR_BAD_TRANSMISSION    ||
+            inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
+            inputStr == TCP_ERR_PATIENT_NOT_FOUND
+        )
+        {
+            NC_replyAvailable = true
+            NC_comError = true
+            NC_reply = Transmission(null, null, inputStr)
+
+            return
+        }
+
+// We got a message; (1) parse header, (2) load all of the message (if not already)
+        val header = loadHeader(
+            inputStr.subSequence(0, 67).toString(),
+            globalTCPInfo?.sessionToken!!
+        )
+
+        if ((header.H_MSG_LEN + 64 + 67) > TCP_DEFAULT_RECV_LEN)
+        {
+            // Need to receive more bytes
+            val toReceive = (header.H_MSG_LEN + 64 + 67) - TCP_DEFAULT_RECV_LEN
+
+            val pBuff = ByteArray(toReceive.toInt())
+            val pBytes = s.inputStream.read(pBuff)
+
+            inputBuff += pBuff
+            inputBytes += pBytes
+
+        }
+
+        val finalReplyStr = String(inputBuff, 0, inputBytes)
+
+        val hashStr = finalReplyStr.subSequence(67, 131).toString()
+        val msgStr  = finalReplyStr.subSequence(131, finalReplyStr.lastIndex + 1).toString()
+
+        NC_reply = Transmission(header, hashStr, msgStr)
+        NC_comError = false
+        NC_replyAvailable = true
 
     }
 }
