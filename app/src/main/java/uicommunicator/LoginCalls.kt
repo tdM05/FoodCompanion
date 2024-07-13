@@ -6,9 +6,8 @@ import androidx.annotation.RequiresApi
 import com.example.foodcompanion.Client
 import com.example.foodcompanion.TCPInfo
 import com.example.foodcompanion.globalTCPInfo
-import java.lang.Thread
-
 import uicommunicator.Encryptor.RSAEncrypt
+import java.security.MessageDigest
 
 
 data class PTInfo(
@@ -133,9 +132,12 @@ fun verifyID(
     *   Wait for the response and decode it.
     *  */
 
-    val encrypted_message: String = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
-    Log.d(SC, encrypted_message)
-    val sha256: String? = null
+    val encryptedMessage: String = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+
+    val hashedMessage : String? = MessageDigest.getInstance("SHA-256").digest(encryptedMessage.toByteArray()).fold("") { str, it -> str + "%02x".format(it) }
+    Log.d(SC, encryptedMessage)
+    Log.d(SC, "$hashedMessage")
+
 
     return true
 }
