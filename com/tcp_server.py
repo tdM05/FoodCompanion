@@ -208,7 +208,7 @@ class Server:
 
             except AssertionError as _AE:
                 stderr(f'[{__c_name}] Invalid NW_CON request <CONN. ABORTED>: {str(_AE).split("//")[0].strip()}\n')
-                _conn.send(str(_AE).split('//')[-1].strip())
+                _conn.send(str(_AE).split('//')[-1].strip().encode())
                 self._remove(__c_name)
 
                 return
@@ -224,14 +224,14 @@ class Server:
 
             except AssertionError as _AE:
                 stderr(f'[{__c_name}] Invalid MEAL_OPTIONS request <CONN. ABORTED>: {str(_AE).split("//")[0].strip()}\n')
-                _conn.send(str(_AE).split('//')[-1].strip())
+                _conn.send(str(_AE).split('//')[-1].strip().encode())
                 self._remove(__c_name)
 
                 return
 
             except Exception as E:
                 stderr(f'[{__c_name}] Failed to handle MEAL_OPTIONS req: {E.__class__.__name__}({str(E)})')
-                _conn.send(sc_data.Errors.GENERAL)
+                _conn.send(sc_data.Errors.GENERAL.encode())
 
         else:
             if b'GET' in _rcv and b'HTTP' in _rcv: # This is an HTTP request
@@ -355,7 +355,7 @@ class Server:
             # The above line was commented out because the server will automatically send the error code
             #   below to the client.
 
-            assert False, f'Patient not found. {sc_data.Errors.PATIENT_NOT_FOUND}'
+            assert False, f'Patient not found. // {sc_data.Errors.PATIENT_NOT_FOUND}'
 
         # Send meal options
         _reply_to(_conn, json.dumps(sc_db.get_meal_options(pt_diet)).encode(), rx.header.H_SES_TOK)

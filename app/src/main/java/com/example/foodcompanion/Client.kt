@@ -1,10 +1,14 @@
 package com.example.foodcompanion
 
 import android.util.Log
-import java.net.Socket
+import uicommunicator.Transmission
 import uicommunicator.appVersion
 import uicommunicator.loadHeader
-import uicommunicator.Transmission
+import java.net.InetAddress
+import java.net.NetworkInterface
+import java.net.Socket
+import java.util.Collections
+import java.util.Locale
 
 
 val TCP_ERR_GENERAL             = "ERR.EXIT"
@@ -18,6 +22,35 @@ val TCP_ERR_INCOMPLETE_MESSAGE  = "ERR.INCM"
 val TCP_DEFAULT_RECV_LEN        = 1024
 
 /* Network */
+
+fun getIPAddress(): MutableList<String> {
+    val ipv4Addrs = mutableListOf("")
+
+    try
+    {
+        val interfaces: List<NetworkInterface> = Collections.list(NetworkInterface.getNetworkInterfaces())
+        for (intf in interfaces)
+        {
+            val addrs: List<InetAddress> = Collections.list(intf.inetAddresses)
+            for (addr in addrs)
+            {
+                if (!addr.isLoopbackAddress)
+                {
+                    val sAddr: String = addr.hostAddress ?: continue
+
+                    if (sAddr.indexOf(':') < 0)
+                        ipv4Addrs.add(sAddr)
+                }
+            }
+        }
+    } catch (ignored: Exception) {}
+
+    return ipv4Addrs
+}
+
+val ips: MutableList<String> = getIPAddress()
+var sip: String? = null
+val port = 12345
 
 data class TCPInfo
 (
@@ -49,16 +82,37 @@ class Client : Runnable
         * TODO:
         *   Make the app load the local IP address of the device automatically.
         * */
-        val ip   = "192.168.56.1"
-        val port = 12345
 
-        Log.d(SC, "Trying to connect to $ip:$port.")
+        var client: Socket? = null
+        ips.add("10.0.2.2")
+        Log.d(SC, "$ips")
 
-        val client = Socket(ip, port)
+        for (ip in ips.iterator())
+        {
+            if (ip == "") continue
 
-        if (client.isConnected)
+            Log.d(SC, "Trying to connect to $ip:$port.")
+
+            try
+            {
+                client = Socket(ip, port)
+                sip = ip
+            }
+            catch (ignore: Exception)
+            {
+                continue
+            }
+
+        }
+
+        if (sip == null)
+        {
+            Log.e(SC, "Could not connect to any IP")
+            return false
+        }
+
+        if (client!!.isConnected)
             Log.d(SC, "Connected to TCP server.")
-
         else
         {
             Log.e(SC, "Could not connect to TCP server.")
@@ -169,6 +223,8 @@ class NClient: Runnable
         NC_comError = false
         NC_reply = null
 
+        sip = null
+
         if (globalTCPInfo == null)
         {
             Log.e(SC, "Cannot send message - session not established.")
@@ -185,22 +241,49 @@ class NClient: Runnable
         val hm: ByteArray = (hmsg ?: return).encodeToByteArray()
         val em: ByteArray = emsg ?: return
 
+        var s: Socket? = null
 
-        val s = Socket("192.168.56.1", 12345)
+        for (ip in ips.iterator())
+        {
+            if (ip == "") continue
+
+            Log.d(SC, "Trying to connect to $ip:$port.")
+
+            try
+            {
+                s = Socket(ip, port)
+                sip = ip
+            }
+            catch (ignore: Exception)
+            {
+                continue
+            }
+
+        }
+
+        if (sip == null)
+        {
+            Log.e(SC, "Could not connect to any IP")
+            return
+        }
 
         var out = hb
         out += hm
         out += em
 
-        s.outputStream.write(out)
+        Log.i(SC, "Sending HDrHM-format message to server.")
+        s!!.outputStream.write(out)
 
         var inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
         var inputBytes = s.inputStream.read(inputBuff)
 
         val inputStr = String(inputBuff, 0, inputBytes)
+        Log.d(SC, "RECV: $inputStr")
 
         if (inputStr == "")
         {
+            Log.w(SC, "Connection closed.")
+
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, null)
@@ -219,12 +302,16 @@ class NClient: Runnable
             inputStr == TCP_ERR_PATIENT_NOT_FOUND
         )
         {
+            Log.w(SC, "SC_WARN: $inputStr")
+
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, inputStr)
 
             return
         }
+
+        Log.d(SC, "Decoding meal options...")
 
 // We got a message; (1) parse header, (2) load all of the message (if not already)
         val header = loadHeader(
@@ -242,7 +329,6 @@ class NClient: Runnable
 
             inputBuff += pBuff
             inputBytes += pBytes
-
         }
 
         val finalReplyStr = String(inputBuff, 0, inputBytes)
