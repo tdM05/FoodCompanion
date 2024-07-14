@@ -54,6 +54,7 @@ object Notification {
 @Composable
 fun MainPage(
     onFoodButtonClicked: (String) -> Unit = {},
+    onLogoutClicked: (String) -> Unit = {}
 ) {
     Column (
 
@@ -69,8 +70,11 @@ fun MainPage(
                     Pair("Profile Information"){
                         Log.d("debug", "profile information")
                     },
-                    Pair("Sign Out"){
+                    Pair("Sign Out",
+                        ){
                         Log.d("debug", "signed out")
+                        
+                        onFoodButtonClicked("Login")
                     }
                 ),
                 iconDescription = "Profile"
