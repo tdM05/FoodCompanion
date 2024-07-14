@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -189,10 +190,8 @@ fun MainPage(
                     mutableStateOf(false)
                 }
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { infoRemember = !infoRemember },
                     Modifier
-                        .size(50.dp)
-                        .weight(1f)
                 ) {
                     Icon(
                         painter = painterResource(
@@ -200,15 +199,41 @@ fun MainPage(
                         ),
                         contentDescription = null
                     )
+                    DropdownMenu(
+                        expanded = infoRemember,
+                        onDismissRequest = { infoRemember = false },
+                        modifier = Modifier.background(color = Color(0xFF222222))
+                    ) {
+                        var calories = 0f
+                        var starches = 0f
+                        var fiber = 0f
+                        var sugar = 0f
+                        var protein = 0f
+                        var trans = 0f
+                        var saturated = 0f
+                        for (food in rememberMeal) {
+                            calories += getNumFromString(food.foodDetails[0])
+                            starches += getNumFromString(food.foodDetails[1])
+                            fiber += getNumFromString(food.foodDetails[2])
+                            sugar += getNumFromString(food.foodDetails[3])
+                            protein += getNumFromString(food.foodDetails[4])
+                            trans += getNumFromString(food.foodDetails[5])
+                            saturated += getNumFromString(food.foodDetails[6])
+                        }
+                        val textcol = Color.White
+                        Text("Total:", fontWeight = FontWeight.Bold, color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Calories: $calories", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Starches: $starches", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Fibers: $fiber", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Sugars: $sugar", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Proteins: $protein", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Trans Fat: $trans", color = textcol, modifier = Modifier.padding(8.dp))
+                        Text("Saturated Fat: $saturated", color = textcol, modifier = Modifier.padding(8.dp))
+                        //food details list is this format
+                        //carbs, proteins, fats (el will input only the numbers in this order)
+                    }
                 }
-                DropdownMenu(expanded = infoRemember, onDismissRequest = { infoRemember = false }) {
-//                    calculateCalories()
-//                    calculateProteins()
-//                    calculateCarbs()
-//                    calculateFats()
-                    //food details list is this format
-                    //carbs, proteins, fats (el will input only the numbers in this order)
-                }
+
             }
             if (!rememberMeal.isEmpty()) {
                 for (food in rememberMeal) {
@@ -232,6 +257,17 @@ fun MainPage(
     }
 }
 
+fun getNumFromString(str: String): Float {
+    var equalIndex: Int = str.length - 1
+    for (i in 0..(str.length-1)){
+        if (str[i] == '=') {
+            equalIndex = i
+            break
+        }
+    }
+
+    return str.slice((equalIndex+1)..<str.length).toFloat()
+}
 @Composable
 fun SignOut(){
     Log.d("debug", "signed out")

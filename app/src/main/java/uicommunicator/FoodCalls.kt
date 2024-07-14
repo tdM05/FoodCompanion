@@ -132,7 +132,7 @@ fun FoodsCall(){
         "1",
         FoodTypes.Dessert.name,
         listOf(
-            "Calories = 300 ",
+            "Calories = 300",
             "starches = 20.0",
             "fiber = 2.0",
             "sugars = 30.0",
