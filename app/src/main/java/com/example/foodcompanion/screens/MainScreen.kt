@@ -67,37 +67,37 @@ fun MainPage(
                 mutableStateOf(false)
             }
             Box {
-                IconButton(onClick = { expandedBool = !expandedBool }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.account_circle_24dp_5f6368_fill0_wght400_grad0_opsz24),
-                        tint = Color(0xFF222222),
-                        contentDescription = "Profile information"
-                    )
-                }
-                val menuList = mutableListOf(
-                    Pair("Profile Information"){
-                        Log.d("debug", "profile information")
-                    },
-                    Pair("Sign Out",
-                        ){
-                        Log.d("debug", "signed out")
-                        expandedBool = false
-                        FoodManager.myMeal.clear()
-                        onFoodButtonClicked("Login")
-                    }
-                )
-                DropdownMenu(
-                    expanded = expandedBool,
-                    onDismissRequest = { expandedBool = false },
-                    modifier = Modifier.background(color = Color(0xFF1C5D99))
-                ) {
-                    for (item in menuList) {
-                        DropdownMenuItem(
-                            text = {Text(text = item.first, color = Color.White)},
-                            onClick = { item.second.invoke() }
-                        )
-                    }
-                }
+//                IconButton(onClick = { expandedBool = !expandedBool }) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.account_circle_24dp_5f6368_fill0_wght400_grad0_opsz24),
+//                        tint = Color(0xFF222222),
+//                        contentDescription = "Profile information"
+//                    )
+//                }
+//                val menuList = mutableListOf(
+//                    Pair("Profile Information"){
+//                        Log.d("debug", "profile information")
+//                    },
+//                    Pair("Sign Out",
+//                        ){
+//                        Log.d("debug", "signed out")
+//                        expandedBool = false
+//                        FoodManager.myMeal.clear()
+//                        onFoodButtonClicked("Login")
+//                    }
+//                )
+//                DropdownMenu(
+//                    expanded = expandedBool,
+//                    onDismissRequest = { expandedBool = false },
+//                    modifier = Modifier.background(color = Color(0xFF1C5D99))
+//                ) {
+//                    for (item in menuList) {
+//                        DropdownMenuItem(
+//                            text = {Text(text = item.first, color = Color.White)},
+//                            onClick = { item.second.invoke() }
+//                        )
+//                    }
+//                }
             }
             // profile
 //            ExpandableIcon(
