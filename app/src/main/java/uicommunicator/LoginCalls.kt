@@ -95,7 +95,7 @@ fun verifyID(
     if (ptInfo == null)
     {
         Log.e(SC, "Invalid login information.")
-        enableButton.invoke()
+        //enableButton.invoke()
         return false
     }
 
@@ -147,7 +147,7 @@ fun verifyID(
         encryptedMessage = RSAEncrypt(outMessage, tcpInfo.pubKey!!)
     }
     else {
-        enableButton.invoke()
+        //enableButton.invoke()
         return false
     }
     val hashedMessage : String = MessageDigest.getInstance("SHA-256").digest(encryptedMessage).fold("") { str, it -> str + "%02x".format(it) }
@@ -168,7 +168,7 @@ fun verifyID(
     ) {
         Log.e(SC, "Login failed.")
         //
-        enableButton.invoke()
+        //enableButton.invoke()
         return false
     }
 
