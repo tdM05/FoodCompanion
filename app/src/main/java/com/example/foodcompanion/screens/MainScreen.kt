@@ -63,34 +63,70 @@ fun MainPage(
 
         // header
         Row {
-            // profile
-            ExpandableIcon(
-                painter = painterResource(id = R.drawable.account_circle_24dp_5f6368_fill0_wght400_grad0_opsz24),
-                menuList = mutableListOf(
+            var expandedBool by remember {
+                mutableStateOf(false)
+            }
+            Box {
+                IconButton(onClick = { expandedBool = !expandedBool }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.account_circle_24dp_5f6368_fill0_wght400_grad0_opsz24),
+                        tint = Color(0xFF222222),
+                        contentDescription = "Profile information"
+                    )
+                }
+                val menuList = mutableListOf(
                     Pair("Profile Information"){
                         Log.d("debug", "profile information")
                     },
                     Pair("Sign Out",
                         ){
                         Log.d("debug", "signed out")
-                        
+                        expandedBool = false
+                        FoodManager.myMeal.clear()
                         onFoodButtonClicked("Login")
                     }
-                ),
-                iconDescription = "Profile"
-            )
+                )
+                DropdownMenu(
+                    expanded = expandedBool,
+                    onDismissRequest = { expandedBool = false },
+                    modifier = Modifier.background(color = Color(0xFF1C5D99))
+                ) {
+                    for (item in menuList) {
+                        DropdownMenuItem(
+                            text = {Text(text = item.first, color = Color.White)},
+                            onClick = { item.second.invoke() }
+                        )
+                    }
+                }
+            }
+            // profile
+//            ExpandableIcon(
+//                painter = painterResource(id = R.drawable.account_circle_24dp_5f6368_fill0_wght400_grad0_opsz24),
+//                menuList = mutableListOf(
+//                    Pair("Profile Information"){
+//                        Log.d("debug", "profile information")
+//                    },
+//                    Pair("Sign Out",
+//                        ){
+//                        Log.d("debug", "signed out")
+//
+//                        onFoodButtonClicked("Login")
+//                    }
+//                ),
+//                iconDescription = "Profile"
+//            )
             Spacer(modifier = Modifier.weight(1f))
             // notifications
             var menuList = mutableListOf<Pair<String, () -> Unit>>()
             for (i in 0..Notification.message.size - 1) {
                 menuList.add(Pair(Notification.message[i]) {})
             }
-            ExpandableIcon(
-                painter = painterResource(id = R.drawable.notifications_24dp_5f6368_fill0_wght400_grad0_opsz24),
-                menuList = menuList,
-                iconDescription = "Profile",
-                clickable = false
-            )
+//            ExpandableIcon(
+//                painter = painterResource(id = R.drawable.notifications_24dp_5f6368_fill0_wght400_grad0_opsz24),
+//                menuList = menuList,
+//                iconDescription = "Profile",
+//                clickable = false
+//            )
         }
         Column (
             modifier = Modifier.verticalScroll(rememberScrollState())
