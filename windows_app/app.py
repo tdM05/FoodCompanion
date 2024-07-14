@@ -1,5 +1,5 @@
 import tkinter as tk, sys
-import winclient as sc_client, data as sc_data
+import winclient as sc_client, data as sc_data, client_data as sc_helper
 from threading import Timer
 from tkinter import ttk
 from typing import cast, List, Dict, Any, Tuple
