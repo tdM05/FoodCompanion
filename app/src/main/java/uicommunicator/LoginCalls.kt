@@ -78,7 +78,7 @@ fun verifyID(
     instID: String,
     ptID:   String,         /* Numeric IDs only! */
     ptDOB:  String,         /* Must be in the format YYYYMMDD */
-    pageToNavigateTo: () -> Unit
+    enableButton: () -> Unit
 ): Boolean {
 
     /*
@@ -95,6 +95,7 @@ fun verifyID(
     if (ptInfo == null)
     {
         Log.e(SC, "Invalid login information.")
+        enableButton.invoke()
         return false
     }
 
@@ -140,7 +141,15 @@ fun verifyID(
     *   Wait for the response and decode it.
     *  */
 
-    val encryptedMessage: ByteArray = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+    //val encryptedMessage: ByteArray = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
+    var encryptedMessage: ByteArray? = null
+    if ( RSAEncrypt(outMessage, tcpInfo.pubKey!!) != null){
+        encryptedMessage = RSAEncrypt(outMessage, tcpInfo.pubKey!!)
+    }
+    else {
+        enableButton.invoke()
+        return false
+    }
     val hashedMessage : String = MessageDigest.getInstance("SHA-256").digest(encryptedMessage).fold("") { str, it -> str + "%02x".format(it) }
 
     NClient.hdr = header
@@ -158,6 +167,8 @@ fun verifyID(
         NC_reply?.header == null
     ) {
         Log.e(SC, "Login failed.")
+        //
+        enableButton.invoke()
         return false
     }
 
@@ -169,7 +180,6 @@ fun verifyID(
 
 
     createFoodObjectsFromJson(parsedJson)
-
     return true
 }
 
