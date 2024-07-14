@@ -1,11 +1,13 @@
 package uicommunicator
 
 
+import android.util.Log
 import com.example.foodcompanion.data.FoodCategory
 import com.example.foodcompanion.data.FoodTypes
 import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.R
+import com.example.foodcompanion.data.DietOrder
 import com.example.foodcompanion.data.FoodItem
 import org.json.JSONArray
 import org.json.JSONObject
@@ -179,31 +181,53 @@ fun FoodsCall(){
     importFoodsToThisUser(listOf(item1, item2, item3, item4, item5, item6, item7))
 }
 
-fun mapFoodItemToFood(foodItem: FoodItem): Food {
-    val servingSizeString = "${foodItem.servingSize.count} ${foodItem.servingSize.unit}"
+fun createFoodObjectsFromJson(diet: DietOrder) {
+    val meals = listOf(
+        FoodCategory.Breakfast to diet.breakfast,
+        FoodCategory.Lunch to diet.lunch,
+        FoodCategory.Dinner to diet.dinner
+    )
+
+    val foodsList = mutableListOf<Pair<Food, String>>()
+
+    for ((mealCategory, meal) in meals) {
+        meal.Starch?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Starches.name, mealCategory))
+        }
+        meal.Fruit?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Fruits.name, mealCategory))
+        }
+        meal.Beverage?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Beverages.name, mealCategory))
+        }
+        meal.Vegetable?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Vegetables.name, mealCategory))
+        }
+        meal.Condiment?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Condiments.name, mealCategory))
+        }
+        meal.Entree?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Entrees.name, mealCategory))
+        }
+        meal.Desert?.forEach { foodItem ->
+            foodsList.add(createFoodPair(foodItem, FoodTypes.Dessert.name, mealCategory))
+        }
+    }
+
+    importFoodsToThisUser(foodsList)
+}
+
+fun createFoodPair(foodItem: FoodItem, foodCategory: String, mealCategory: FoodCategory): Pair<Food, String> {
     val foodDetails = listOf(
         "Calories = ${foodItem.calories}",
-        "Starches = ${foodItem.macros.carbohydrates?.starches}",
-        "Fiber = ${foodItem.macros.carbohydrates?.fiber}",
-        "Sugars = ${foodItem.macros.carbohydrates?.sugars}",
-        "Protein = ${foodItem.macros.protein}",
-        "Trans = ${foodItem.macros.fats?.trans}",
-        "Saturated = ${foodItem.macros.fats?.saturated}"
+        "starches = ${foodItem.macros.carbohydrates.starches}",
+        "fiber = ${foodItem.macros.carbohydrates.fiber}",
+        "sugars = ${foodItem.macros.carbohydrates.sugars}",
+        "proteins = ${foodItem.macros.protein}",
+        "trans = ${foodItem.macros.fats.trans}",
+        "saturated = ${foodItem.macros.fats.saturated}"
     )
-    val foodCategory = determineFoodCategory(foodItem)
-    return getFoodObject(foodItem.name, servingSizeString, foodCategory, foodDetails)
+    val servingSize = "${foodItem.servingSize.count} ${foodItem.servingSize.unit}"
+    val food = getFoodObject(foodItem.name, servingSize, foodCategory, foodDetails)
+    return Pair(food, mealCategory.name)
 }
-
-fun determineFoodCategory(foodItem: FoodItem): String {
-    return when {
-        foodItem.appliesTo.contains("Starch") -> FoodTypes.Starches.name
-        foodItem.appliesTo.contains("Fruit") -> FoodTypes.Fruits.name
-        foodItem.appliesTo.contains("Vegetable") -> FoodTypes.Vegetables.name
-        foodItem.appliesTo.contains("Condiment") -> FoodTypes.Condiments.name
-        foodItem.appliesTo.contains("Entree") -> FoodTypes.Entrees.name
-        foodItem.appliesTo.contains("Beverage") -> FoodTypes.Beverages.name
-        foodItem.appliesTo.contains("Dessert") -> FoodTypes.Dessert.name
-        else -> FoodTypes.Entrees.name // Default to Entrees if no category matches
-    }
-}
-

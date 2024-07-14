@@ -13,6 +13,7 @@ import java.security.MessageDigest
 import com.example.foodcompanion.NC_reply
 import com.example.foodcompanion.NC_comError
 import com.example.foodcompanion.NC_replyAvailable
+import com.example.foodcompanion.data.FoodCategory
 import com.example.foodcompanion.data.Meal
 import com.example.foodcompanion.data.parseJson
 
@@ -167,41 +168,8 @@ fun verifyID(
 
 
 
-    importFoodsToThisUser(mapMeal("Breakfast", parsedJson.breakfast))
-    importFoodsToThisUser(mapMeal("Lunch", parsedJson.lunch))
-    importFoodsToThisUser(mapMeal("Dinner", parsedJson.dinner))
+    createFoodObjectsFromJson(parsedJson)
 
     return true
 }
 
-
-fun mapMeal(mealCategory: String, meal: Meal?): List<Pair<Food, String>> {
-    val foodsToImport = mutableListOf<Pair<Food, String>>()
-
-    meal?.let { m ->
-        m.Starch?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Fruit?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Vegetable?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Condiment?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Entree?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Beverage?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-        m.Dessert?.forEach { foodItem ->
-            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
-        }
-
-    }
-
-    return foodsToImport
-}
