@@ -626,6 +626,46 @@ class App:
             fieldbackground=[('disabled', _default_theme.BG), ('readonly', _default_theme.BG)],
         )
 
+        self.style.layout(f'TScrollbar',
+                     [
+                         (
+                             f'TScrollbar.trough', {
+                                 'children':
+                                     [
+                                         ('Vertical.Scrollbar.uparrow', {'side': 'top', 'sticky': ''}),
+                                         ('Vertical.Scrollbar.downarrow', {'side': 'bottom', 'sticky': ''}),
+                                         ('Vertical.Scrollbar.thumb',
+                                          {'unit': '1', 'children': [
+                                              ('Vertical.Scrollbar.grip',
+                                               {'sticky': ''}
+                                               )
+                                          ], 'sticky': 'nswe'
+                                           }
+                                          )
+                                     ],
+                                 'sticky': 'ns'})
+                     ])
+
+        self.style.configure(f'TScrollbar', troughcolor=_default_theme.BG)
+
+        self.style.configure(
+            f'TScrollbar',
+            background=_default_theme.BG,
+            arrowcolor=_default_theme.AC1
+        )
+        self.style.map(
+            f'TScrollbar',
+            background=[
+                ("active", _default_theme.AC1), ('disabled', _default_theme.BG)
+            ],
+            foreground=[
+                ("active", _default_theme.AC2), ('disabled', _default_theme.BG)
+            ],
+            arrowcolor=[
+                ('disabled', _default_theme.BG)
+            ]
+        )
+
         for (up, e) in self.update_reqs:
             try:
                 match up:
