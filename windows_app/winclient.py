@@ -111,7 +111,7 @@ class WinClient:
         rx_msg_str = rx.message.decode().strip()
 
         if rx_msg_str in sc_data.Errors.Errors:
-            sys.stderr.write(f"[WinClient :: ERROR] SRV_ERR/{rx_msg_str}")
+            sys.stderr.write(f"[WinClient :: ERROR] SRV_ERR/{rx_msg_str}\n")
             return rx_msg_str
 
         try:
