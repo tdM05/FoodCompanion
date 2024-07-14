@@ -13,5 +13,3 @@ import com.google.gson.Gson
 //        return gson.toJson(foodData)
 //    }
 //}
-
-
