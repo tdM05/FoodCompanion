@@ -141,7 +141,7 @@ fun FoodsCall(){
             "saturated = 80.",
             )
     )
-    val item5 = Pair(fruits, FoodCategory.Breakfast.name)
+    val item5 = Pair(desserts, FoodCategory.Breakfast.name)
 
 
     val beverages = getFoodObject("Orange Juice",
@@ -162,7 +162,7 @@ fun FoodsCall(){
 
     val condiments = getFoodObject("Brown Rice",
         "1",
-        FoodTypes.Starches.name,
+        FoodTypes.Condiments.name,
         listOf(
             "Calories = 20 ",
             "starches = 0.0",
@@ -175,7 +175,8 @@ fun FoodsCall(){
 
             )
     )
-    importFoodsToThisUser(listOf(item1, item2, item3, item4, item5, item6))
+    val item7 = Pair(condiments, FoodCategory.Breakfast.name)
+    importFoodsToThisUser(listOf(item1, item2, item3, item4, item5, item6, item7))
 }
 
 fun mapFoodItemToFood(foodItem: FoodItem): Food {
