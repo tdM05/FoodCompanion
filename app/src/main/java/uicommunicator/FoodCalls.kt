@@ -6,7 +6,9 @@ import com.example.foodcompanion.data.FoodTypes
 import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.R
-
+import com.example.foodcompanion.data.FoodItem
+import org.json.JSONArray
+import org.json.JSONObject
 
 
 
@@ -56,84 +58,6 @@ fun importFoodsToThisUser(foods: List<Pair<Food, String>>){
 // This function is called in MainActivity temporarily but should be called by the server later
 //This function should be deleted later. It is for demonstration purposes
 fun FoodsCall(){
-    //For food types you should use the FoodType enum to avoid typos because the image will ont render if there is a typo
-    /*
-       //breakfast options
-       val food1 = getFoodObject(
-           "Brocolli",
-           "16g",
-           FoodTypes.Vegetables.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item1 = Pair(food1, FoodCategory.Breakfast.name)
-       val food2 = getFoodObject(
-           "Some Condiments",
-           "16g",
-           FoodTypes.Condiments.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item2 = Pair(food2, FoodCategory.Breakfast.name)
-       val food3 = getFoodObject(
-           "Some desert",
-           "16g",
-           FoodTypes.Dessert.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item3 = Pair(food3, FoodCategory.Breakfast.name)
-       val food4 = getFoodObject(
-           "Some Beverage",
-           "16g",
-           FoodTypes.Beverages.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item4 = Pair(food4, FoodCategory.Breakfast.name)
-       val food5 = getFoodObject(
-           "Some Fruits",
-           "16g",
-           FoodTypes.Fruits.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item5 = Pair(food5, FoodCategory.Breakfast.name)
-
-
-       val food6 = getFoodObject(
-           "Some Starches",
-           "16g",
-           FoodTypes.Starches.name,
-           listOf(
-               "Calories: 16g",
-               "blablabla",
-               "More stuff"
-           )
-       )
-       val item6 = Pair(food6, FoodCategory.Breakfast.name)
-
-
-
-
-       //Import statement
-       importFoodsToThisUser(listOf(item1, item2, item3, item4, item5, item6))
-    */
     val entrees = getFoodObject("Grilled Chicken",
         "1",
         FoodTypes.Entrees.name,
@@ -253,3 +177,32 @@ fun FoodsCall(){
     )
     importFoodsToThisUser(listOf(item1, item2, item3, item4, item5, item6))
 }
+
+fun mapFoodItemToFood(foodItem: FoodItem): Food {
+    val servingSizeString = "${foodItem.servingSize.count} ${foodItem.servingSize.unit}"
+    val foodDetails = listOf(
+        "Calories = ${foodItem.calories}",
+        "Starches = ${foodItem.macros.carbohydrates?.starches}",
+        "Fiber = ${foodItem.macros.carbohydrates?.fiber}",
+        "Sugars = ${foodItem.macros.carbohydrates?.sugars}",
+        "Protein = ${foodItem.macros.protein}",
+        "Trans = ${foodItem.macros.fats?.trans}",
+        "Saturated = ${foodItem.macros.fats?.saturated}"
+    )
+    val foodCategory = determineFoodCategory(foodItem)
+    return getFoodObject(foodItem.name, servingSizeString, foodCategory, foodDetails)
+}
+
+fun determineFoodCategory(foodItem: FoodItem): String {
+    return when {
+        foodItem.appliesTo.contains("Starch") -> FoodTypes.Starches.name
+        foodItem.appliesTo.contains("Fruit") -> FoodTypes.Fruits.name
+        foodItem.appliesTo.contains("Vegetable") -> FoodTypes.Vegetables.name
+        foodItem.appliesTo.contains("Condiment") -> FoodTypes.Condiments.name
+        foodItem.appliesTo.contains("Entree") -> FoodTypes.Entrees.name
+        foodItem.appliesTo.contains("Beverage") -> FoodTypes.Beverages.name
+        foodItem.appliesTo.contains("Dessert") -> FoodTypes.Dessert.name
+        else -> FoodTypes.Entrees.name // Default to Entrees if no category matches
+    }
+}
+

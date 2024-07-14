@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.example.foodcompanion.Client
+import com.example.foodcompanion.Food
 import com.example.foodcompanion.TCPInfo
 import com.example.foodcompanion.globalTCPInfo
 import com.example.foodcompanion.NClient
@@ -12,7 +13,8 @@ import java.security.MessageDigest
 import com.example.foodcompanion.NC_reply
 import com.example.foodcompanion.NC_comError
 import com.example.foodcompanion.NC_replyAvailable
-
+import com.example.foodcompanion.data.Meal
+import com.example.foodcompanion.data.parseJson
 
 data class PTInfo(
     val institutionID: String,
@@ -160,8 +162,46 @@ fun verifyID(
 
     val dietJson: String = NC_reply?.message!!
     Log.i(SC, "Received diet order: $dietJson")
+    val parsedJson = parseJson(dietJson)
+    Log.d(SC, "$parsedJson")
+
+
+
+    importFoodsToThisUser(mapMeal("Breakfast", parsedJson.breakfast))
+    importFoodsToThisUser(mapMeal("Lunch", parsedJson.lunch))
+    importFoodsToThisUser(mapMeal("Dinner", parsedJson.dinner))
 
     return true
 }
 
 
+fun mapMeal(mealCategory: String, meal: Meal?): List<Pair<Food, String>> {
+    val foodsToImport = mutableListOf<Pair<Food, String>>()
+
+    meal?.let { m ->
+        m.Starch?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Fruit?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Vegetable?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Condiment?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Entree?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Beverage?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+        m.Dessert?.forEach { foodItem ->
+            foodsToImport.add(Pair(mapFoodItemToFood(foodItem), mealCategory))
+        }
+
+    }
+
+    return foodsToImport
+}
