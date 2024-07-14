@@ -17,6 +17,7 @@ import com.example.foodcompanion.data.FoodCategory
 import com.example.foodcompanion.data.Meal
 import com.example.foodcompanion.data.parseJson
 import kotlinx.coroutines.delay
+import kotlin.concurrent.thread
 
 
 data class PTInfo(
@@ -93,7 +94,7 @@ fun verifyID(
 
     Log.d(SC, "Checking patient information.")
     val ptInfo = checkPTInfo(instID, ptID, ptDOB) // ?: return false
-
+    //Thread.sleep(100)
     if (ptInfo == null)
     {
         Log.e(SC, "Invalid login information.")
@@ -160,6 +161,7 @@ fun verifyID(
     while (!NC_replyAvailable) { Log.v(SC, "Waiting for TCPClient2") }
     t.join(1)
 
+    Thread.sleep(100)
     if (
         NC_comError                 ||
         NC_reply?.hash == null      ||
@@ -172,11 +174,13 @@ fun verifyID(
         enableButton.invoke()
         return false
     }
-
+    Thread.sleep(1000)
     val dietJson: String = NC_reply?.message!!
     Log.i(SC, "Received diet order: $dietJson")
+    Thread.sleep(100)
     val parsedJson = parseJson(dietJson)
     Log.d(SC, "$parsedJson")
+    Thread.sleep(100)
 
     createFoodObjectsFromJson(parsedJson)
     return true

@@ -24,8 +24,7 @@ fun Main (){
         composable(route = "Main") {
 
             MainPage(
-                onFoodButtonClicked = {foodPageToGoTo: String -> navController.navigate(foodPageToGoTo)},
-                onLogoutClicked = {})
+                onFoodButtonClicked = {foodPageToGoTo: String -> navController.navigate(foodPageToGoTo)})
         }
         composable(route = FoodCategory.Breakfast.name) {
             FoodsPage(FoodCategory.Breakfast.name){
