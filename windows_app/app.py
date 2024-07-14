@@ -22,6 +22,9 @@ class Theme:
 FONT_TITLE = "Montserrat Black"
 FONT_MAIN = "Montserrat Medium"
 
+_id_to_food_map_: Dict[int, sc_data.Food] = {}
+_name_to_fid_map: Dict[str, int] = {}
+
 
 class UpdateReq(Enum):
     (
@@ -189,9 +192,42 @@ class App:
         self.root.update()
         self.mf_iframe.configure(scrollregion=self.mf_iframe.bbox("all"))
 
+    def on_pt_login(self) -> None:
+        global _name_to_fid_map, _id_to_food_map_
+        in_data = sc_helper.UserData.load_pref(sc_helper.UserData.generate_user_hash(self.fid.get(), self.pid.get(), self.login_cal.get().replace('/', '')))
+
+        if not in_data:
+            return
+
+        # Save stuff to self.__selected_foods
+        for name, A in in_data.items():
+            if name not in _name_to_fid_map:
+                sys.stderr.write(f"Item '{name}' no longer available.\n")
+                continue
+
+            fid = _name_to_fid_map[name]
+
+            # Make sure that the previous meal-time selections are still valid
+            f = _id_to_food_map_[fid]
+            B = [a for a in A if a in list(map(lambda mt: mt.value, f.meal))]
+
+            if not len(B):
+                sys.stderr.write(f"Item '{name}' no longer available at selected time(s).\n")
+                continue
+
+            self.__selected_food[fid] = B
+
     def on_app_close(self) -> None:
+        global _id_to_food_map_
+
         if self.status_lbl_task is not None:
             self.status_lbl_task.cancel()
+
+        # Save the current preferences (map IDs to names and save a subset of self.__selected_foods)
+        uh = sc_helper.UserData.generate_user_hash(self.fid.get(), self.pid.get(), self.login_cal.get().replace('/', ''))
+        out_data = {_id_to_food_map_[k].name: v for k, v in self.__selected_food.items()}
+
+        sc_helper.UserData.save_pref(uh, out_data)
 
         self.root.quit()
 
@@ -297,7 +333,7 @@ class App:
         self.mf_vsb.pack(fill=tk.Y, expand=False, side=tk.RIGHT)
 
         self.mf_calorie_counter.pack(fill=tk.X, expand=True, padx=20, pady=5)
-        self.update_cal()
+        self.on_pt_login()  # Load previously saved selections.
 
         self.root.update()
 
@@ -345,6 +381,8 @@ class App:
                     'f': f,  # sc_data.Food
                 }
                 self.config_meal_opt(len(self.__data) - 1)
+
+        self.update_cal()  # config_meal_opt fills in caloric lookup, which is needed by this function.
 
     def config_meal_opt(self, __i: int) -> None:
         global _default_theme, FONT_MAIN, FONT_TITLE
@@ -425,9 +463,20 @@ class App:
 
         self.__data[__i]['B'] = [
             (bb, bl, bd),
-            [False, False, False],
+            [
+                True if sc_data.Meal.B.value in self.__selected_food.get(f.id, []) else False,  # Load dynamically from the loaded information.
+                True if sc_data.Meal.L.value in self.__selected_food.get(f.id, []) else False,
+                True if sc_data.Meal.D.value in self.__selected_food.get(f.id, []) else False
+            ],
             ("Breakfast", "Lunch", "Dinner")
         ]
+
+        for i, v in enumerate(self.__data[__i]['B'][1]):
+            if v:
+                self.__data[__i]['B'][0][i].configure(
+                    style='On.TButton',
+                    text='Added to %s' % self.__data[__i]['B'][2][i]
+                )
 
         bb.config(
             command=lambda *_: self.toggle_button(__i, 0),
@@ -458,7 +507,7 @@ class App:
         f3.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def toggle_button(self, __i, __j) -> None:
-        s = ~(self.__data[__i]['B'][1][__j])
+        s = not (self.__data[__i]['B'][1][__j])
         fid = cast(sc_data.Food, self.__data[__i]['f']).id
 
         self.__data[__i]['B'][1][__j] = s
@@ -764,12 +813,16 @@ def parse_options(
         pdob: int,
         pid: int
 ) -> tuple[sc_data.MealOption, dict[sc_data.FoodCategory, Any], dict[str, Dict[int, sc_data.Food]]] | None:
+    global _id_to_food_map_, _name_to_fid_map
+
     mo = sc_client.WinClient.login(iid, pdob, pid)
 
     if not isinstance(mo, dict):
         return None
 
     food = parse(mo)
+    _id_to_food_map_ = {**food}  # Copying this way to make sure the dictionaries aren't linked.
+    _name_to_fid_map = {f.name: f.id for f in food.values()}
 
     do = cast(sc_data.MealOption, sc_data.MealOption._member_map_[mo['dietOrder'].upper()])
 
@@ -792,4 +845,5 @@ def parse_options(
 
 
 if __name__ == "__main__":
+    sc_helper.UserData.cleanDir()
     App()
