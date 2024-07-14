@@ -105,17 +105,21 @@ class Client : Runnable
 
         }
 
+        client ?: return false
+
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
+            client.close()
             return false
         }
 
-        if (client!!.isConnected)
+        if (client.isConnected)
             Log.d(SC, "Connected to TCP server.")
         else
         {
             Log.e(SC, "Could not connect to TCP server.")
+            client.close()
             return false
         }
 
@@ -134,6 +138,7 @@ class Client : Runnable
         if (inputBytes == -1)
         {
             Log.e(SC, "Did not receive message from server (0).")
+            client.close()
             return false
         }
 
@@ -261,9 +266,12 @@ class NClient: Runnable
 
         }
 
+        s ?: return
+
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
+            s.close()
             return
         }
 
@@ -272,7 +280,7 @@ class NClient: Runnable
         out += em
 
         Log.i(SC, "Sending HDrHM-format message to server.")
-        s!!.outputStream.write(out)
+        s.outputStream.write(out)
 
         var inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
         var inputBytes = s.inputStream.read(inputBuff)
@@ -287,6 +295,8 @@ class NClient: Runnable
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, null)
+
+            s.close()
 
             return
         }
@@ -307,6 +317,8 @@ class NClient: Runnable
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, inputStr)
+
+            s.close()
 
             return
         }
@@ -339,6 +351,8 @@ class NClient: Runnable
         NC_reply = Transmission(header, hashStr, msgStr)
         NC_comError = false
         NC_replyAvailable = true
+
+        s.close()
 
     }
 }
