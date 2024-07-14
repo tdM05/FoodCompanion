@@ -45,8 +45,6 @@ import com.example.foodcompanion.Food
 import com.example.foodcompanion.FoodManager
 import com.example.foodcompanion.FoodWidget
 import com.example.foodcompanion.R
-import uicommunicator.updateMealStatus
-
 object Notification {
     var message: MutableList<String> = mutableListOf("test1", "test2asdfasdfasdfsadfasdfasdfasdfasdfasdf")
 }
@@ -179,7 +177,6 @@ fun MainPage(
         var mealReady by remember {
             mutableStateOf(true)
         }
-        updateMealStatus { mealStatus: Boolean -> mealReady = mealStatus }
         Column(
             modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
@@ -188,46 +185,29 @@ fun MainPage(
                     fontSize = myMealFont,
                     modifier = Modifier.padding(16.dp),
                     color = Color(0xFF1C5D99))
-                if (mealReady) {
-                    Text(
-                        text = "(ready!)",
-                        fontSize = statusFont,
-                        modifier = Modifier.padding(16.dp),
-                        color = Color(0xFF639FAB)
+                var infoRemember by remember {
+                    mutableStateOf(false)
+                }
+                IconButton(
+                    onClick = { /*TODO*/ },
+                    Modifier
+                        .size(50.dp)
+                        .weight(1f)
+                ) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
+                        ),
+                        contentDescription = null
                     )
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        Modifier
-                            .size(50.dp)
-                            .weight(1f)
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
-                            ),
-                            tint = Color(0xFF222222),
-                            contentDescription = null
-                        )
-                    }
-                } else {
-                    Text(
-                        text = "(not ready)",
-                        fontSize = statusFont,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        Modifier
-                            .size(50.dp)
-                            .weight(1f)
-                    ) {
-                        Icon(
-                            painter = painterResource(
-                                id = R.drawable.help_24dp_5f6368_fill0_wght400_grad0_opsz24
-                            ),
-                            contentDescription = null
-                        )
-                    }
+                }
+                DropdownMenu(expanded = infoRemember, onDismissRequest = { infoRemember = false }) {
+//                    calculateCalories()
+//                    calculateProteins()
+//                    calculateCarbs()
+//                    calculateFats()
+                    //food details list is this format
+                    //carbs, proteins, fats (el will input only the numbers in this order)
                 }
             }
             if (!rememberMeal.isEmpty()) {

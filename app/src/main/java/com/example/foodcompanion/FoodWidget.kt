@@ -39,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import uicommunicator.canAddThisFood
-import uicommunicator.updateMealStatus
 
 class Food (
     val foodName: String,
@@ -115,9 +114,6 @@ fun FoodWidget(
                     onClick = {
                         FoodManager.myMeal.remove(food)
                         removeFromFoodList.invoke()
-                        if (updateMealReady != null) {
-                            updateMealStatus(updateMealReady)
-                        }
                     }
                 ) {
                     Icon(
