@@ -83,9 +83,9 @@ class Server:
         self.__net = (__ip, __port)
         self.__threads: Dict[str, _S_THREAD] = {}
         self.__connections: Dict[str, Tuple[socket.socket, Tuple[str, int], rsa.PublicKey | None, rsa.PrivateKey | None]] = {}
+        self.__curr_task: Timer
 
         self.__shutdown = False
-        self.cntr = 0
 
         self._net_check()
 
@@ -96,6 +96,7 @@ class Server:
 
         Server.__is_alive = False
         _SERVER_THREAD.done()
+        self.__curr_task.cancel()
 
         self._shutdown()
 
@@ -141,24 +142,19 @@ class Server:
                     except Exception:
                         pass
 
+        self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
+        self.__curr_task.start()
+
     def _main_loop(self) -> None:
         global _SERVER_THREAD
 
         self.__socket.setblocking(False)
 
-        # self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
-        # self.__curr_task.start()
+        self.__curr_task = Timer(function=self._clear_ost, interval=Server.__cost_timer)
+        self.__curr_task.start()
 
         while Server.__is_alive & (~_SERVER_THREAD.is_done):
             try:
-                self.cntr += 1
-
-                # if self.cntr > 10:
-                #     stdout("[CLEAR] Calling _clear_ost()\n")
-                #     self.cntr = 0
-                #
-                #     self._clear_ost()
-
                 R, *_ = select.select(
                     [self.__socket, *[c[0] for c in self.__connections.values() if not c[0]._closed]],
                     [],
@@ -366,9 +362,6 @@ class Server:
         
         stdout(f"[{__c_name}] Sent out {pt_diet.name} meal options.\n")
 
-        # All done, remove session token from our list of valid sessions
-        Server.__sessions.pop(_hdr.H_SES_TOK)
-
         return
 
     def _shutdown(self) -> None:
@@ -380,6 +373,11 @@ class Server:
         self.__shutdown = True
 
         self.__socket.close()
+
+        try:
+            self.__curr_task.cancel()
+        except Exception:
+            pass
 
         for (s, *_) in self.__connections.values():
             try:
@@ -397,6 +395,8 @@ class Server:
 
     def __del__(self) -> None:
         global _SERVER_THREAD
+
+        self.__curr_task.cancel()
 
         try:
             self.__socket.close()
