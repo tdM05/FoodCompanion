@@ -199,11 +199,15 @@ fun LoginPage
 
             //This is the button
             val context = LocalContext.current
-            val birthday: String = year+month+day
-            Log.d("birthday", birthday)
+
             Button(
                 onClick = {
-                    if (verifyID(institutionID, patientID, "20050103", pageToNavigateTo)) {
+                    if (month.trim().length == 1) month = "0$month"
+                    if (day.trim().length == 1) day = "0$day"
+
+                    val birthday: String = "$year$month$day"
+
+                    if (verifyID(institutionID, patientID, birthday, pageToNavigateTo)) {
                         pageToNavigateTo()
                     } else {
                         Toast.makeText(
