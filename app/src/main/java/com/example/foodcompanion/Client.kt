@@ -9,6 +9,7 @@ import java.net.NetworkInterface
 import java.net.Socket
 import java.util.Collections
 import java.util.Locale
+import java.lang.StringIndexOutOfBoundsException
 
 
 val TCP_ERR_GENERAL             = "ERR.EXIT"
@@ -105,6 +106,8 @@ class Client : Runnable
 
         }
 
+        client ?: return false
+
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
@@ -112,7 +115,7 @@ class Client : Runnable
             return false
         }
 
-        if (client!!.isConnected)
+        if (client.isConnected)
             Log.d(SC, "Connected to TCP server.")
         else
         {
@@ -152,7 +155,8 @@ class Client : Runnable
                 inputStr == TCP_ERR_BAD_REQUEST         ||
                 inputStr == TCP_ERR_BAD_TRANSMISSION    ||
                 inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
-                inputStr == TCP_ERR_PATIENT_NOT_FOUND
+                inputStr == TCP_ERR_PATIENT_NOT_FOUND   ||
+                inputStr.contains("ERR", ignoreCase = false)
             )
             {
                 Log.d(SC, "ERROR: $inputStr")
@@ -265,6 +269,8 @@ class NClient: Runnable
 
         }
 
+        s ?: return
+
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
@@ -277,7 +283,7 @@ class NClient: Runnable
         out += em
 
         Log.i(SC, "Sending HDrHM-format message to server.")
-        s!!.outputStream.write(out)
+        s.outputStream.write(out)
 
         var inputBuff = ByteArray(TCP_DEFAULT_RECV_LEN)
         var inputBytes = s.inputStream.read(inputBuff)
@@ -293,6 +299,8 @@ class NClient: Runnable
             NC_comError = true
             NC_reply = Transmission(null, null, null)
 
+            s.close()
+
             return
         }
 
@@ -304,7 +312,8 @@ class NClient: Runnable
             inputStr == TCP_ERR_BAD_REQUEST         ||
             inputStr == TCP_ERR_BAD_TRANSMISSION    ||
             inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
-            inputStr == TCP_ERR_PATIENT_NOT_FOUND
+            inputStr == TCP_ERR_PATIENT_NOT_FOUND   ||
+            inputStr.contains("ERR", ignoreCase = false)
         )
         {
             Log.w(SC, "SC_WARN: $inputStr")
@@ -312,6 +321,8 @@ class NClient: Runnable
             NC_replyAvailable = true
             NC_comError = true
             NC_reply = Transmission(null, null, inputStr)
+
+            s.close()
 
             return
         }
@@ -338,12 +349,25 @@ class NClient: Runnable
 
         val finalReplyStr = String(inputBuff, 0, inputBytes)
 
-        val hashStr = finalReplyStr.subSequence(67, 131).toString()
-        val msgStr  = finalReplyStr.subSequence(131, finalReplyStr.lastIndex + 1).toString()
+        s.close()
 
-        NC_reply = Transmission(header, hashStr, msgStr)
-        NC_comError = false
-        NC_replyAvailable = true
+        try
+        {
+            val hashStr = finalReplyStr.subSequence(67, 131).toString()
+            val msgStr = finalReplyStr.subSequence(131, finalReplyStr.lastIndex + 1).toString()
 
+            NC_reply = Transmission(header, hashStr, msgStr)
+            NC_comError = false
+            NC_replyAvailable = true
+
+        }
+        catch (exc: StringIndexOutOfBoundsException)
+        {
+            NC_reply = Transmission(null, null, TCP_ERR_GENERAL)
+            NC_comError = true
+            NC_replyAvailable = true
+
+            return
+        }
     }
 }

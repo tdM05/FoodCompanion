@@ -363,6 +363,7 @@ class Server:
 
         # Send meal options
         _reply_to(_conn, json.dumps(sc_db.get_meal_options(pt_diet)).encode(), rx.header.H_SES_TOK)
+        
         stdout(f"[{__c_name}] Sent out {pt_diet.name} meal options.\n")
 
         # All done, remove session token from our list of valid sessions

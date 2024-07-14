@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,7 +92,9 @@ fun LoginPage
                                 },
                 label = { Text("Patient ID", color = textLabelColor) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = textPadding),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = textPadding),
                 colors = textFieldColor,
                 textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
             )
@@ -107,7 +110,9 @@ fun LoginPage
                                 },
                 label = { Text("Institution ID", color = textLabelColor) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = textPadding),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = textPadding),
                 colors = textFieldColor,
                 textStyle = LocalTextStyle.current.copy(color = Color(0xFF639FAB))
             )
@@ -123,7 +128,9 @@ fun LoginPage
             Text(text = "Date of Birth",
                 fontSize = 20.sp,
                 color = Color(0xFF1C5D99),
-                modifier = Modifier.align(Alignment.Start).padding(horizontal = textPadding)
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(horizontal = textPadding)
             )
             Row (
                 horizontalArrangement = Arrangement.Center,
@@ -199,23 +206,28 @@ fun LoginPage
 
             //This is the button
             val context = LocalContext.current
-
+            var enableButton by remember {
+                mutableStateOf(true)
+            }
             Button(
+                enabled = enableButton,
                 onClick = {
+                    enableButton = false
+
                     if (month.trim().length == 1) month = "0$month"
                     if (day.trim().length == 1) day = "0$day"
 
                     val birthday: String = "$year$month$day"
 
-                    if (verifyID(institutionID, patientID, birthday, pageToNavigateTo)) {
+                    if (verifyID(institutionID, patientID, birthday) { enableButton = true }) {
                         pageToNavigateTo()
                     } else {
                         Toast.makeText(
                             context,
                             "Log in failed",
                             Toast.LENGTH_LONG
-                        )
-                            .show()
+                        ).show()
+                        Log.d("button", enableButton.toString())
                     }
                 },
                 colors = ButtonColors(Color(0xFF222222), Color(0xFFFFFFFF), Color.Blue, Color.Green)
