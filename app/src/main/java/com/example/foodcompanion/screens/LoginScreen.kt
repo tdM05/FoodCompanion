@@ -1,6 +1,7 @@
 package com.example.foodcompanion.screens
 
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -84,9 +85,7 @@ fun LoginPage
             TextField(
                 value = patientID,
                 onValueChange = {
-                    if (it.isEmpty() || it.matches(pattern)) {
-                        patientID = it
-                    }
+                    patientID = it
                                 },
                 label = { Text("Patient ID", color = textLabelColor) },
                 singleLine = true,
@@ -200,9 +199,11 @@ fun LoginPage
 
             //This is the button
             val context = LocalContext.current
+            val birthday: String = year+month+day
+            Log.d("birthday", birthday)
             Button(
                 onClick = {
-                    if (verifyID(institutionID, patientID, (year+month+day), pageToNavigateTo)) {
+                    if (verifyID(institutionID, patientID, "20050103", pageToNavigateTo)) {
                         pageToNavigateTo()
                     } else {
                         Toast.makeText(
