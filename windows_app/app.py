@@ -40,9 +40,9 @@ class UpdateReq(Enum):
 
 _default_theme = Theme(
     '#F8F0FB',
-    '#211A1D',
-    '#6320EE',
-    '#8075FF',
+    '#222222',
+    '#1C5D99',
+    '#639FAB',
     '#00AAA8',
     '#EE6055'
 )
