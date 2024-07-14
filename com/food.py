@@ -88,11 +88,16 @@ def filter_meals(diet: MealOption) -> Dict[str, Any]:
 def load():
     global foods
 
-    d = {
-        "breakfast": {},
-        "lunch": {},
-        "dinner": {}
-    }
+    with open("food.json", "r") as i:
+        inp = json.loads(i.read())
+        i.close()
+
+    foods = parse(inp)
+
+
+def parse(inp: Dict[str, Any]) -> Dict[int, Food]:
+
+    d: Dict[int, Food] = {}
 
     dm = {
         "breakfast":    Meal.B,
@@ -100,11 +105,10 @@ def load():
         "dinner":       Meal.D
     }
 
-    with open("food.json", "r") as i:
-        inp = json.loads(i.read())
-        i.close()
-
     for m in inp:
+        if m not in dm:
+            continue  # Skips dietOrder and limits
+
         M = dm[m]
 
         for c in inp[m]:
@@ -112,9 +116,9 @@ def load():
 
             for f in inp[m][c]:
                 fid = f['id']
-                if fid in foods:  # This food already exists, we just need to append another meal to it.
-                    if M not in foods[fid].meal:
-                        foods[fid].meal.append(M)
+                if fid in d:  # This food already exists, we just need to append another meal to it.
+                    if M not in d[fid].meal:
+                        d[fid].meal.append(M)
 
                     continue      # Move on to the next food item.
 
@@ -132,7 +136,7 @@ def load():
                 SSU: str   = f['servingSize']['unit']
                 diets: List[str] = f['appliesTo']
 
-                foods[fid] = \
+                d[fid] = \
                     Food(
                         fid,
                         name,
@@ -144,6 +148,8 @@ def load():
                         [M],
                         cast(FoodCategory, C)
                     )
+
+    return d
 
 
 def save():

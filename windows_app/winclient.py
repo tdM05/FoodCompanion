@@ -17,6 +17,9 @@ class _ClientHelper:
         HDrHMBytes = __conn.recv(HDrHMFMTHeaderLen + sc_data.SHA3_256_HASH_SIZE)
 
         if HDrHMBytes == '' or len(HDrHMBytes) != (HDrHMFMTHeaderLen + sc_data.SHA3_256_HASH_SIZE):
+            if b'ERR' in HDrHMBytes:
+                return sc_data.Transmission(None, None, HDrHMBytes)
+
             return None
 
         hdr_bytes = HDrHMBytes[:HDrHMFMTHeaderLen:]

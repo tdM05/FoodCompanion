@@ -108,6 +108,7 @@ class Client : Runnable
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
+            client.close()
             return false
         }
 
@@ -116,6 +117,7 @@ class Client : Runnable
         else
         {
             Log.e(SC, "Could not connect to TCP server.")
+            client.close()
             return false
         }
 
@@ -134,6 +136,7 @@ class Client : Runnable
         if (inputBytes == -1)
         {
             Log.e(SC, "Did not receive message from server (0).")
+            client.close()
             return false
         }
 
@@ -153,6 +156,7 @@ class Client : Runnable
             )
             {
                 Log.d(SC, "ERROR: $inputStr")
+                client.close()
                 return false
             }
 
@@ -264,6 +268,7 @@ class NClient: Runnable
         if (sip == null)
         {
             Log.e(SC, "Could not connect to any IP")
+            s.close()
             return
         }
 
