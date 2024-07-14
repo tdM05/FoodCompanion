@@ -85,7 +85,9 @@ fun LoginPage
             TextField(
                 value = patientID,
                 onValueChange = {
-                    patientID = it
+                    if (it.isEmpty() || it.matches(pattern)) {
+                        patientID = it
+                    }
                                 },
                 label = { Text("Patient ID", color = textLabelColor) },
                 singleLine = true,
@@ -101,9 +103,7 @@ fun LoginPage
             TextField(
                 value = institutionID,
                 onValueChange = {
-                    if (it.isEmpty() || it.matches(pattern)) {
-                        institutionID = it
-                    }
+                    institutionID = it
                                 },
                 label = { Text("Institution ID", color = textLabelColor) },
                 singleLine = true,
