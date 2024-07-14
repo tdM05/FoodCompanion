@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -212,6 +213,7 @@ fun LoginPage
                 enabled = enableButton,
                 onClick = {
                     enableButton = false
+
                     if (month.trim().length == 1) month = "0$month"
                     if (day.trim().length == 1) day = "0$day"
 

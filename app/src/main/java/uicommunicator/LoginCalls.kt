@@ -16,6 +16,8 @@ import com.example.foodcompanion.NC_replyAvailable
 import com.example.foodcompanion.data.FoodCategory
 import com.example.foodcompanion.data.Meal
 import com.example.foodcompanion.data.parseJson
+import kotlinx.coroutines.delay
+
 
 data class PTInfo(
     val institutionID: String,
@@ -95,14 +97,18 @@ fun verifyID(
     if (ptInfo == null)
     {
         Log.e(SC, "Invalid login information.")
-        //enableButton.invoke()
+        enableButton.invoke()
         return false
     }
 
     Log.d(SC, "Logging In; I(${ptInfo.institutionID}), P(${ptInfo.patientDOB}), D(${ptInfo.patientID})")
 
-    Thread(Client()).start()
+    val t0 = Thread(Client())
+    t0.start()
+
     while (globalTCPInfo == null) { Log.v(SC, "Waiting for TCPClient") }
+
+    t0.join()
 
     val tcpInfo: TCPInfo = globalTCPInfo!!
 
@@ -114,8 +120,9 @@ fun verifyID(
     )
     {
         Log.e(SC, "Not connected to server.")
-        throw Exception("Not connected to server.")
-
+        Thread.sleep(50)
+        enableButton.invoke()
+        return false
     }
 
     Log.i(SC, "Successfully connected to the server.")
@@ -128,18 +135,8 @@ fun verifyID(
             ptInfo.patientID.toString().length +            /* Length of patient ID */
             2                                               /* 2 delimiter characters */
 
-    /*  TODO: This message will be changed to {instID}~{patientDOB}~{patientID} once encryption is working. */
-
     val outMessage: String = "${ptInfo.institutionID}~${ptInfo.patientDOB}~${ptInfo.patientID}"
     val header = createHeader(msgLength.toLong(), tcpInfo.sessionToken!!)
-
-    /* TODO:
-    *   Encrypt the message.
-    *   Run SHA256 on the encrypted message
-    *   Send {header}{sha256}{encrypted_message} to the server
-    *
-    *   Wait for the response and decode it.
-    *  */
 
     //val encryptedMessage: ByteArray = RSAEncrypt(outMessage, tcpInfo.pubKey!!) ?: return false
     var encryptedMessage: ByteArray? = null
@@ -147,7 +144,8 @@ fun verifyID(
         encryptedMessage = RSAEncrypt(outMessage, tcpInfo.pubKey!!)
     }
     else {
-        //enableButton.invoke()
+        Thread.sleep(50)
+        enableButton.invoke()
         return false
     }
     val hashedMessage : String = MessageDigest.getInstance("SHA-256").digest(encryptedMessage).fold("") { str, it -> str + "%02x".format(it) }
@@ -156,9 +154,11 @@ fun verifyID(
     NClient.hmsg = hashedMessage
     NClient.emsg = encryptedMessage
 
-    Thread(NClient()).start()
+    val t = Thread(NClient())
+    t.start()
 
     while (!NC_replyAvailable) { Log.v(SC, "Waiting for TCPClient2") }
+    t.join(1)
 
     if (
         NC_comError                 ||
@@ -167,8 +167,9 @@ fun verifyID(
         NC_reply?.header == null
     ) {
         Log.e(SC, "Login failed.")
-        //
-        //enableButton.invoke()
+
+        Thread.sleep(50)
+        enableButton.invoke()
         return false
     }
 
@@ -176,8 +177,6 @@ fun verifyID(
     Log.i(SC, "Received diet order: $dietJson")
     val parsedJson = parseJson(dietJson)
     Log.d(SC, "$parsedJson")
-
-
 
     createFoodObjectsFromJson(parsedJson)
     return true

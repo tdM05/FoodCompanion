@@ -9,6 +9,7 @@ import java.net.NetworkInterface
 import java.net.Socket
 import java.util.Collections
 import java.util.Locale
+import java.lang.StringIndexOutOfBoundsException
 
 
 val TCP_ERR_GENERAL             = "ERR.EXIT"
@@ -154,10 +155,12 @@ class Client : Runnable
                 inputStr == TCP_ERR_BAD_REQUEST         ||
                 inputStr == TCP_ERR_BAD_TRANSMISSION    ||
                 inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
-                inputStr == TCP_ERR_PATIENT_NOT_FOUND
+                inputStr == TCP_ERR_PATIENT_NOT_FOUND   ||
+                inputStr.contains("ERR", ignoreCase = false)
             )
             {
                 Log.d(SC, "ERROR: $inputStr")
+                client.close()
                 return false
             }
 
@@ -309,7 +312,8 @@ class NClient: Runnable
             inputStr == TCP_ERR_BAD_REQUEST         ||
             inputStr == TCP_ERR_BAD_TRANSMISSION    ||
             inputStr == TCP_ERR_INCOMPLETE_MESSAGE  ||
-            inputStr == TCP_ERR_PATIENT_NOT_FOUND
+            inputStr == TCP_ERR_PATIENT_NOT_FOUND   ||
+            inputStr.contains("ERR", ignoreCase = false)
         )
         {
             Log.w(SC, "SC_WARN: $inputStr")
@@ -345,14 +349,25 @@ class NClient: Runnable
 
         val finalReplyStr = String(inputBuff, 0, inputBytes)
 
-        val hashStr = finalReplyStr.subSequence(67, 131).toString()
-        val msgStr  = finalReplyStr.subSequence(131, finalReplyStr.lastIndex + 1).toString()
-
-        NC_reply = Transmission(header, hashStr, msgStr)
-        NC_comError = false
-        NC_replyAvailable = true
-
         s.close()
 
+        try
+        {
+            val hashStr = finalReplyStr.subSequence(67, 131).toString()
+            val msgStr = finalReplyStr.subSequence(131, finalReplyStr.lastIndex + 1).toString()
+
+            NC_reply = Transmission(header, hashStr, msgStr)
+            NC_comError = false
+            NC_replyAvailable = true
+
+        }
+        catch (exc: StringIndexOutOfBoundsException)
+        {
+            NC_reply = Transmission(null, null, TCP_ERR_GENERAL)
+            NC_comError = true
+            NC_replyAvailable = true
+
+            return
+        }
     }
 }
