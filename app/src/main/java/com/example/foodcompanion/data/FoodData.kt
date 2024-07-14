@@ -48,6 +48,7 @@ data class ServingSize(
     val count: Double,
     val unit: String
 )
+
 public fun parseJson(jsonString: String): DietOrder {
     val gson = Gson()
     return gson.fromJson(jsonString, DietOrder::class.java)

@@ -15,9 +15,3 @@
 local.properties
 _gitignore_*
 *.pdf
-/windows_app/src/fonts/Montserrat-Black.ttf
-/windows_app/src/fonts/Montserrat-Bold.ttf
-/windows_app/src/fonts/Montserrat-ExtraBold.ttf
-/windows_app/src/fonts/Montserrat-Medium.ttf
-/windows_app/src/fonts/Montserrat-Regular.ttf
-/windows_app/src/fonts/Montserrat-SemiBold.ttf
