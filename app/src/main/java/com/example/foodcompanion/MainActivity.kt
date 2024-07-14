@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity()  {
         // create a LoginCalls object to call stuff in the ui
         setContent {
             Main()
-           //FoodsCall() //This is only for demonstration purposes. See FoodCalls in uicommunicator for details
+            FoodsCall() //This is only for demonstration purposes. See FoodCalls in uicommunicator for details
         }
     }
 }
