@@ -1,12 +1,16 @@
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 # Food Companion
 
-Food Companion is an app created for MediHacks 2024 hackathon. Food Companion is an Android application designed to aid in the  nutrition tracking of patient and simplify the task of doctors prescribing meal for patient. It simplify the task of doctors prescribing meals for patient planning and tracking for people with specific dietary needs. The simple UI helps ensure that the app is user friendly and able to be used by most people. Food Companion is made of a mobile app built with Java and Kotlin and Pc app built with python and a sever built with Python.
+Food Companion is an app created for the MediHacks 2024 hackathon. Food Companion is an Android application designed to aid in the  nutrition tracking of patients and simplify the task of doctors prescribing meals for patients. It simplifies the task of doctors prescribing meals for patient planning and tracking for people with specific dietary needs. The simple UI helps ensure that the app is user-friendly and able to be used by most people. Food Companion is made of a mobile app built with Java and Kotlin and PC app built with Python and a server built with Python.
 
 
 ## Features
 - Customizable Meal Options: Filter food items based on various meal options such as regular, low cholesterol, diabetic-friendly, and more.
-- Detailed Nutritional Information: Access detailed macronutrient information, including breakdowns of carbohydrates (fiber, sugars), fats (saturated, trans), and more.
+- Detailed Nutritional Information: Access detailed macronutrient information, including breakdowns of carbohydrates (fibre, sugars), fats (saturated, trans), and more.
 - Categorized Food Database: Easily navigate through a well-organized food database with categories like Entrees, Starches, Vegetables, Fruits, Desserts, Beverages, and Condiments.
 - Server Integration: Seamlessly import meal plans from a server, ensuring that you always have up-to-date diet orders and nutritional information.
 - User-Friendly Interface: Intuitive UI that makes it simple to select meal categories and view corresponding food items.
@@ -14,13 +18,17 @@ Food Companion is an app created for MediHacks 2024 hackathon. Food Companion is
 
 Food Companion utilizes JSON data to represent meal options and nutrient details for various food items. The JSON structure includes:
 
-- Categories: Starch, Fruit, Vegetable, Condiment, Entree, Dessert and Soups.
+- Categories: Starch, Fruit, Vegetable, Condiment, Entree, Dessert, Beverages, and Soups.
 - Details: Calories, macros, serving size, and optional additional details.
 ## Tech Stack
 
-**Client:** Kotlin, Java
+**Android Client:** Kotlin, Java
+
+**Windows Client:** Python
 
 **Server:**  Python
+
+**Patient Database**: SQLite3 
 
 
 ## Authors
