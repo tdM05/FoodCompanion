@@ -53,3 +53,5 @@ public fun parseJson(jsonString: String): DietOrder {
     val gson = Gson()
     return gson.fromJson(jsonString, DietOrder::class.java)
 }
+
+// This comment was made for reasons undisclosed.
