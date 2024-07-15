@@ -193,13 +193,12 @@ class Server:
         _conn, *_ = self.__connections[__c_name]
         _rcv = b'' + _conn.recv(sc_data.SRVC_TCP_RECV_N)
 
-        stdout(f'[{__c_name}] Received "{_rcv}"\n')
-
         if not _rcv:
-            stderr(f'[{__c_name}] Connection closed.\n')
+            # stderr(f'[{__c_name}] Connection closed.\n')
             self._remove(__c_name)
-
             return
+
+        stdout(f'[{__c_name}] Received "{_rcv}"\n')
 
         if sc_data.NEW_CONN_CODE in _rcv:
             try:
