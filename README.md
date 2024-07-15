@@ -1,7 +1,7 @@
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
-![JSON](https://img.shields.io/badge/json-%222222.svg?style=for-the-badge&logo=json&logoColor=yellow)
+![JSON](https://img.shields.io/badge/json-%f80000.svg?style=for-the-badge&logo=json&logoColor=yellow)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
 
 ![Windows](https://ziadoua.github.io/m3-Markdown-Badges/badges/Windows/windows2.svg)
