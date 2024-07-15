@@ -13,6 +13,7 @@ Food Companion is an app created for the MediHacks 2024 hackathon. Food Companio
 
 [Get the Windows FoodCompanion Client](https://github.com/tdM05/FoodCompanion/releases/tag/%23winclient)
 
+[Get the Android app (APK)](https://github.com/tdM05/FoodCompanion/releases/tag/%23androidclient)
 
 ## Features
 - Customizable Meal Options: Filter food items based on various meal options such as regular, low cholesterol, diabetic-friendly, and more.
