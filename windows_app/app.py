@@ -89,10 +89,7 @@ class App:
         )
 
         self.login_cal.config(
-            background=_default_theme.BG,
-            foreground=_default_theme.FG,
-            selectbackground=_default_theme.AC1,
-            selectforeground=_default_theme.BG,
+            style='TEntry',
             font=(FONT_MAIN, 12)
         )
 
@@ -562,7 +559,7 @@ class App:
 
         self.dob_lbl.pack(padx=20, pady=(10, 0), fill=tk.X, expand=True)
         self.dob_lbl.config(text="Date of Birth", anchor=tk.W, justify=tk.LEFT, font=(FONT_MAIN, 10))
-        self.login_cal.pack(padx=20, pady=(0, 10))
+        self.login_cal.pack(fill=tk.X, expand=False, padx=20, pady=(0, 10))
         self.dob_frm.pack(fill=tk.BOTH, expand=False)
 
         self.login_button.pack(fill=tk.X, expand=True, padx=20, pady=10)
