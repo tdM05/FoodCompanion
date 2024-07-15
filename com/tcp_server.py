@@ -283,9 +283,6 @@ class Server:
         self.__connections[__c_name] = (_conn, _addr, __pb, __pr)
         self.__sessions[_ses_tok] = (__pb, __pr)
 
-        # TODO: Remove this.
-        print(self.__sessions[_ses_tok])
-
         stdout(f'[{__c_name}] New session {_ses_tok}\n')
 
         dout =  sc_data.NEW_CONN_CODE
@@ -380,11 +377,13 @@ class Server:
 
         for (s, *_) in self.__connections.values():
             try:
+                stdout(f"Closing {s}\n")
                 s.close()
             except Exception:
                 pass
 
         for t in self.__threads.values():
+            stdout(f"Joining {s}\n")
             t.join_sf()
 
         _SERVER_THREAD.done()
