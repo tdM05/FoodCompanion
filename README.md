@@ -2,9 +2,9 @@
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
-![Windows]<https://ziadoua.github.io/m3-Markdown-Badges/badges/Windows/windows2.svg)
+![Windows](https://ziadoua.github.io/m3-Markdown-Badges/badges/Windows/windows2.svg)
 ![Android](https://ziadoua.github.io/m3-Markdown-Badges/badges/Android/android3.svg)
-![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)
 
 # Food Companion
 
