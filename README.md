@@ -9,8 +9,9 @@ Food Companion is an app created for the MediHacks 2024 hackathon. Food Companio
 
 
 ## Download
-![Get the Server and Food Manager](https://github.com/tdM05/FoodCompanion/releases/tag/%23server)
-![Get the Windows FoodCompanion Client](https://github.com/tdM05/FoodCompanion/releases/tag/%23winclient)
+[Get the Server and Food Manager](https://github.com/tdM05/FoodCompanion/releases/tag/%23server)
+
+[Get the Windows FoodCompanion Client](https://github.com/tdM05/FoodCompanion/releases/tag/%23winclient)
 
 
 ## Features
