@@ -83,6 +83,7 @@ fun MainPage(
                         text = {Text(text = "Sign Out", color = Color.White)},
                         onClick = {
                             FoodManager.myMeal.clear()
+                            FoodManager.foodOptions.clear()
                             expandedBool = false
                             onFoodButtonClicked("Login")
                         }

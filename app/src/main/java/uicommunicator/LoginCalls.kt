@@ -150,7 +150,7 @@ fun verifyID(
         return false
     }
     val hashedMessage : String = MessageDigest.getInstance("SHA-256").digest(encryptedMessage).fold("") { str, it -> str + "%02x".format(it) }
-
+    Thread.sleep(100)
     NClient.hdr = header
     NClient.hmsg = hashedMessage
     NClient.emsg = encryptedMessage
@@ -174,7 +174,7 @@ fun verifyID(
         enableButton.invoke()
         return false
     }
-    Thread.sleep(1000)
+    Thread.sleep(100)
     val dietJson: String = NC_reply?.message!!
     Log.i(SC, "Received diet order: $dietJson")
     Thread.sleep(100)
