@@ -13,9 +13,13 @@
 
 Food Companion is an app created for the MediHacks 2024 hackathon. Food Companion is an Android application designed to aid in the  nutrition tracking of patients and simplify the task of doctors prescribing meals for patients. It simplifies the task of doctors prescribing meals for patient planning and tracking for people with specific dietary needs. The simple UI helps ensure that the app is user-friendly and able to be used by most people. Food Companion is made of a mobile app built with Java and Kotlin and PC app built with Python and a server built with Python.
 
-## Notice
 
-**_Food Companion was created for the MediHacks 2024 Hackathon by 3 authors in addition to myself. The initial 7-day development can be tracked at the [Food Companion GitHub repo](https://github.com/tdm05/FoodCompanion/)._**
+## Download
+[Get the Server and Food Manager](https://github.com/tdM05/FoodCompanion/releases/tag/%23server)
+
+[Get the Windows FoodCompanion Client](https://github.com/tdM05/FoodCompanion/releases/tag/%23winclient)
+
+[Get the Android app (APK)](https://github.com/tdM05/FoodCompanion/releases/tag/%23androidclient)
 
 ## Features
 - Customizable Meal Options: Filter food items based on various meal options such as regular, low cholesterol, diabetic-friendly, and more.
@@ -40,7 +44,7 @@ Food Companion utilizes JSON data to represent meal options and nutrient details
 **Patient Database**: SQLite3 
 
 
-# Initial Developers
+## Authors
 
 - [@tdM05](https://www.github.com/tdM05)
 - [@GeetanshGautam0](https://www.github.com/GeetanshGautam0)
